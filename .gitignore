@@ -1,0 +1,18 @@
+# Secrets - never commit these
+.env
+.env.*
+!.env.example
+.braintrust.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+.next/
+out/
+
+# macOS
+.DS_Store
