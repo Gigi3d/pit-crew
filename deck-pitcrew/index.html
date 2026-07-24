@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Crew</title>
+<style>
+  :root{
+    --bg:#0a0a0c;--fg:#ffffff;--dim:#8d8d95;
+    --red:#e10600;--green:#00d46a;--amber:#ffc400;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;scroll-snap-type:y mandatory;overflow-x:hidden;
+  }
+  section{
+    min-height:100vh;width:100%;scroll-snap-align:start;
+    display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;
+    padding:6vh 6vw;position:relative;border-bottom:1px solid #1b1b20;
+  }
+  section.solo{grid-template-columns:1fr;text-align:center;justify-items:center}
+  section::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+    background:linear-gradient(180deg,var(--red),transparent)}
+  .n{position:absolute;top:4vh;left:6vw;font-family:var(--mono);
+    font-size:.8rem;letter-spacing:.25em;color:var(--dim)}
+  .kicker{font-family:var(--mono);font-size:.85rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--red);margin-bottom:1.5rem}
+  .kicker.green{color:var(--green)}
+  h1{font-size:clamp(3.4rem,8.5vw,7.5rem);line-height:.9;letter-spacing:-.045em;
+    font-weight:850;text-transform:uppercase}
+  h2{font-size:clamp(2.1rem,4.8vw,4rem);line-height:1.02;letter-spacing:-.03em;font-weight:750}
+  .lede{font-size:clamp(1.1rem,1.7vw,1.5rem);line-height:1.5;color:var(--dim);
+    margin-top:1.5rem;max-width:34ch}
+  .solo .lede{max-width:54ch;margin-left:auto;margin-right:auto}
+  .tag{display:inline-block;margin-top:2rem;padding:.55rem 1.1rem;border:1px solid #2a2a31;
+    border-radius:4px;font-family:var(--mono);font-size:.78rem;color:var(--dim);letter-spacing:.08em}
+  .how{margin-top:1.9rem;padding-left:1.1rem;border-left:3px solid var(--red);
+    font-size:clamp(1rem,1.35vw,1.18rem);line-height:1.55;max-width:39ch}
+  .how b{color:var(--fg);font-weight:650}
+  .how span{color:var(--dim)}
+  .lap{font-family:var(--mono);font-size:clamp(2.6rem,6.5vw,5.5rem);color:var(--green);
+    letter-spacing:-.03em;line-height:1;margin-top:.6rem}
+  .lap small{font-size:.28em;color:var(--dim);letter-spacing:.2em;display:block;margin-top:.7rem}
+
+  figure{width:100%}
+  figure img{width:100%;height:clamp(230px,42vh,450px);object-fit:cover;
+    border-radius:10px;border:1px solid #22222a;display:block}
+  .solo figure{max-width:620px;margin-top:2.5rem}
+
+  /* slide 4: start lights + tournament rounds */
+  .lights{display:flex;gap:14px;justify-content:center;margin-bottom:2rem}
+  .lights i{width:clamp(26px,4.5vw,50px);aspect-ratio:1;border-radius:50%;background:#26262e;
+    display:block;animation:lightOn .3s ease forwards,lightOff .3s ease 2.4s forwards}
+  @keyframes lightOn{to{background:var(--red);box-shadow:0 0 26px rgba(225,6,0,.75)}}
+  @keyframes lightOff{to{background:#26262e;box-shadow:none}}
+  .round{margin-bottom:1.1rem;opacity:0;animation:fade .4s ease forwards}
+  @keyframes fade{to{opacity:1}}
+  .rlabel{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;color:var(--dim);margin-bottom:.5rem}
+  .bays{display:grid;gap:6px}
+  .bay{
+    aspect-ratio:2.1;border-radius:4px;background:#2a2a32;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:clamp(.5rem,.85vw,.72rem);color:#0a0a0c;
+    opacity:0;animation:pop .35s ease forwards;
+  }
+  @keyframes pop{to{opacity:1}}
+  .bay.ok{background:var(--green)}
+  .bay.mid{background:var(--amber)}
+  .bay.p1{background:#fff;box-shadow:0 0 18px rgba(255,255,255,.45);font-weight:700}
+
+  /* slide 5: the number */
+  .big{font-family:var(--mono);letter-spacing:-.04em;line-height:1}
+  .before{font-size:clamp(2rem,5vw,3.6rem);color:var(--dim);text-decoration:line-through}
+  .after{font-size:clamp(4rem,13vw,11rem);color:var(--green);font-weight:700}
+  .mult{font-size:clamp(1.4rem,3vw,2.4rem);color:var(--fg);margin-top:1rem;font-family:var(--mono)}
+  .check{margin-top:1.6rem;font-family:var(--mono);color:var(--green);font-size:1.05rem}
+
+  .pair{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:1.9rem}
+  .pair div{flex:1;min-width:190px}
+  .pair h3{font-family:var(--mono);font-size:1rem;color:var(--red);margin-bottom:.5rem;letter-spacing:.06em}
+  .pair p{color:var(--dim);line-height:1.5;font-size:.97rem}
+  .radio{margin-top:1.4rem;font-family:var(--mono);color:var(--green);font-size:1.05rem;letter-spacing:.05em}
+
+  .tagline{font-size:clamp(1.5rem,2.8vw,2.3rem);color:var(--fg);font-weight:650;
+    margin-top:1.5rem;letter-spacing:-.01em}
+  .hashes{display:flex;gap:.9rem;justify-content:center;margin-top:1.8rem;flex-wrap:wrap}
+  .hashes span{font-family:var(--mono);font-size:clamp(.8rem,1.2vw,1rem);letter-spacing:.06em;
+    padding:.45rem 1rem;border-radius:100px;border:1px solid}
+  .hashes .perf{color:var(--green);border-color:rgba(0,212,106,.45);background:rgba(0,212,106,.07)}
+  .hashes .sec{color:var(--red);border-color:rgba(225,6,0,.45);background:rgba(225,6,0,.07)}
+
+  .model{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.8rem;text-align:left}
+  .model div{flex:1;min-width:150px;border:1px solid #26262e;border-radius:6px;padding:.9rem 1rem}
+  .model div.hero{border-color:var(--green);background:rgba(0,212,106,.05)}
+  .model h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--dim);margin-bottom:.4rem}
+  .model div.hero h4{color:var(--green)}
+  .model .amt{font-family:var(--mono);font-size:clamp(1.1rem,2.1vw,1.5rem);color:var(--fg);line-height:1}
+  .model .amt em{font-style:normal;font-size:.5em;color:var(--dim)}
+  .model p{color:var(--dim);font-size:.85rem;line-height:1.45;margin-top:.45rem}
+
+  .steps{display:flex;gap:1.1rem;flex-wrap:wrap;margin-top:2rem;text-align:left}
+  .step{flex:1;min-width:190px;border-left:3px solid #2a2a32;padding-left:1rem}
+  .step.gold{border-left-color:var(--green)}
+  .step .arr{font-family:var(--mono);font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.03em;
+    color:var(--dim);line-height:1}
+  .step.gold .arr{color:var(--green)}
+  .step h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--dim);margin:.5rem 0 .4rem}
+  .step p{color:var(--dim);font-size:.88rem;line-height:1.45}
+  .step b{color:var(--fg);font-weight:650}
+  .unlock{margin-top:2rem;padding-top:1.4rem;border-top:1px solid #22222a;
+    font-size:1.02rem;color:var(--dim);line-height:1.6;max-width:64ch}
+  .unlock b{color:var(--fg)}
+
+  .modes{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:2rem;text-align:left}
+  .mode{flex:1;min-width:230px;border:1px solid #26262e;border-radius:8px;padding:1.3rem 1.4rem}
+  .mode h3{font-family:var(--mono);font-size:.82rem;letter-spacing:.16em;color:var(--green);margin-bottom:.6rem}
+  .mode p{color:var(--dim);font-size:.96rem;line-height:1.5}
+  .mode b{color:var(--fg);font-weight:650}
+  .next{margin-top:2.2rem;padding-top:1.6rem;border-top:1px solid #22222a;
+    font-size:1.02rem;color:var(--dim);line-height:1.6;max-width:60ch}
+  .next b{color:var(--fg)}
+
+
+  /* sponsor slides invert to white so the stack reads as its own chapter */
+  section.sponsor{
+    --fg:#0a0a0c; --dim:#5b5b66; --green:#00a352;
+    background:#ffffff; color:var(--fg);
+    border-bottom:1px solid #e4e4ea;
+  }
+  section.sponsor::before{background:linear-gradient(180deg,var(--red),rgba(225,6,0,0))}
+  section.sponsor .tag{border-color:#d8d8e0;background:#fafafc}
+  section.sponsor figure img{border-color:#e4e4ea}
+  section.sponsor .n{color:#a0a0ab}
+
+
+  .brand{display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .brand img{height:clamp(36px,4.6vw,54px);width:auto;display:block;border-radius:8px}
+  .brand span{font-size:clamp(1.25rem,2.3vw,1.85rem);font-weight:750;
+    letter-spacing:-.02em;color:var(--fg);line-height:1}
+  .brand .plus{color:var(--dim);font-weight:400;font-size:1.3rem;margin:0 .15rem}
+
+
+  .brand .mark{height:clamp(36px,4.6vw,54px);width:auto;display:block}
+
+
+  .exchange{margin-top:1.7rem;display:flex;flex-direction:column;gap:.65rem;max-width:48ch}
+  .exchange div{font-family:var(--mono);font-size:clamp(.82rem,1.1vw,.98rem);line-height:1.5;
+    padding:.7rem .9rem;border-radius:8px;border:1px solid #e0e0e8;background:#fafafc}
+  .exchange .you{border-left:3px solid var(--red)}
+  .exchange .crew{border-left:3px solid var(--green)}
+  .exchange b{display:block;font-size:.6rem;letter-spacing:.2em;color:var(--dim);
+    margin-bottom:.35rem;font-weight:600}
+  .pair p code{font-family:var(--mono);font-size:.88em;background:#f0f0f5;
+    padding:.1em .35em;border-radius:4px}
+  .pair p b{color:var(--fg);font-weight:650}
+
+  .hint{position:fixed;bottom:1.4rem;right:1.6rem;z-index:20;font-family:var(--mono);
+    font-size:.72rem;color:#4c4c55;letter-spacing:.15em}
+  @media (max-width:900px){
+    section{grid-template-columns:1fr;gap:2rem;padding:8vh 8vw}
+    .lede,.how{max-width:none}
+    figure img{height:195px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="solo">
+  <span class="n">01</span>
+  <div>
+    <div class="kicker">Daytona HackSprint #5</div>
+    <h1>Pit&nbsp;Crew</h1>
+    <p class="tagline">Every PR gets a pit stop.</p>
+    <p class="lede">Thirty mechanics. One car. Four seconds.</p>
+    <div class="hashes"><span class="perf">#performance</span><span class="sec">#security</span></div>
+  </div>
+  <figure><img src="https://media.giphy.com/media/H6t9FUcjJBRiDICHdb/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 2 -->
+<section>
+  <span class="n">02</span>
+  <div>
+    <div class="kicker">The problem</div>
+    <h2>Your code got slower and nobody noticed.</h2>
+  </div>
+  <figure><img src="https://media.giphy.com/media/8K2zqekcOl4Fa/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 3 -->
+<section>
+  <span class="n">03</span>
+  <div>
+    <div class="kicker">The move</div>
+    <h2>Stop guessing.<br>Send thirty.</h2>
+    <p class="lede">Thirty agents, thirty optimisation strategies, thirty sealed bays. The benchmark picks the winner, and the test suite decides whether it is allowed to leave the pit lane.</p>
+    <span class="tag">fastest lap wins, correctness is the gate</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/iic46QD0ceAlnFubFF/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 4 -->
+<section>
+  <span class="n">04</span>
+  <div>
+    <div class="kicker green">Lights out</div>
+    <h2>Three rounds.<br>Survivors carry forward.</h2>
+    <p class="lede">A benchmark returns a number, not a yes or no. So no bay is wasted. We rank all thirty, keep the fastest, mutate them, and run it again.</p>
+    <span class="tag">a tournament, not a lottery</span>
+  </div>
+  <div>
+    <div class="lights">
+      <i style="animation-delay:0s,2.4s"></i><i style="animation-delay:.3s,2.4s"></i>
+      <i style="animation-delay:.6s,2.4s"></i><i style="animation-delay:.9s,2.4s"></i>
+      <i style="animation-delay:1.2s,2.4s"></i>
+    </div>
+    <div id="rounds"></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="solo">
+  <span class="n">05</span>
+  <div>
+    <div class="kicker green">Fastest lap</div>
+    <div class="big before">847ms</div>
+    <div class="big after">91ms</div>
+    <div class="mult">9.3x faster</div>
+    <div class="check">✓ all 240 tests still green</div>
+    <p class="lede">One function. Ninety seconds of wall time. Thirty bays, three rounds, one patch that survived scrutineering.</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="solo">
+  <span class="n">06</span>
+  <div>
+    <div class="kicker green">The business</div>
+    <h2>Every PR is a billable event.</h2>
+    <div class="model">
+      <div>
+        <h4>FREE</h4>
+        <div class="amt">$0</div>
+        <p>One repo, five races a month. The habit starts.</p>
+      </div>
+      <div class="hero">
+        <h4>TEAM</h4>
+        <div class="amt">$25<em>/dev/mo</em></div>
+        <p>Both lanes, every pull request. Same shelf as CodeRabbit and Snyk.</p>
+      </div>
+      <div>
+        <h4>ENTERPRISE</h4>
+        <div class="amt">Sweeps</div>
+        <p>Whole-codebase races, priced against the compute and the incidents they save.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="arr">$1M</div>
+        <h4>300 TEAMS</h4>
+        <p>Bottom-up, self-serve. One repo installs, the team spreads it.</p>
+      </div>
+      <div class="step">
+        <div class="arr">$10M</div>
+        <h4>SECOND LANE</h4>
+        <p><b>#security ships.</b> Same installs, roughly double the seat value.</p>
+      </div>
+      <div class="step gold">
+        <div class="arr">$100M</div>
+        <h4>100K SEATS + ENTERPRISE</h4>
+        <p>$30M in seats, the rest in codebase sweeps and security contracts.</p>
+      </div>
+    </div>
+
+    <div class="unlock">
+      <b>The unlock is the second lane.</b> Every repo that installed us for #performance is already a #security customer, onboarded, with tests wired and credentials granted. We sell the second product at close to zero acquisition cost, which is what turns a seat business into a hundred million dollar one.
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sponsor">
+  <span class="n">07</span>
+  <div>
+    <div class="brand"><svg class="mark" width="275" height="287" viewBox="0 0 275 287" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M14.5584 193.736H114.275V227.925H14.5584V193.736Z" fill="#121212"/> <path d="M148.464 74.076H262.426V108.265H148.464V74.076Z" fill="#121212"/> <path d="M88.6338 84.6127L173.246 0L197.422 24.175L112.809 108.788L88.6338 84.6127Z" fill="#121212"/> <path d="M89.157 170.084L24.175 105.102L0 129.277L64.9819 194.259L89.157 170.084Z" fill="#121212"/> <path d="M174.629 217.911L106.133 286.407L81.9577 262.232L150.454 193.736L174.629 217.911Z" fill="#121212"/> <path d="M174.106 132.44L250.66 208.994L274.835 184.819L198.281 108.265L174.106 132.44Z" fill="#121212"/> <path d="M88.6338 48.434V131.057H54.4451L54.4451 48.434H88.6338Z" fill="#121212"/> <path d="M208.294 168.094V270.66H174.106V168.094H208.294Z" fill="#121212"/> </svg><span>Daytona</span></div>
+    <h2>The garage.</h2>
+    <div class="lap">&lt;90ms<small>TO BUILD A BAY</small></div>
+    <div class="how">
+      <b>How:</b> <span>thirty sandboxes spin up in parallel, each with its own kernel, filesystem, and network. Benchmarks need isolation to be trustworthy, and untrusted patches need it to be safe. One primitive, both problems.</span>
+    </div>
+    <span class="tag">no garage, no race</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/lmq4PIMbNNIguFjhMX/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 8 -->
+<section class="sponsor">
+  <span class="n">08</span>
+  <div>
+    <div class="brand"><img src="https://www.coderabbit.ai/apple-touch-icon.png" alt="CodeRabbit logo"><span>CodeRabbit</span></div>
+    <h2>Scrutineering.</h2>
+    <div class="how">
+      <b>How:</b> <span>CodeRabbit reviews the PR and nominates the slow path, then re-reviews the winning patch before it leaves the pit lane. It opens the job card and it signs off the work.</span>
+    </div>
+    <span class="tag">a benchmark cannot tell you the code is horrible</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/uVVGPrnf2UxBt5oA8h/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 9 -->
+<section class="sponsor">
+  <span class="n">09</span>
+  <div>
+    <div class="brand"><img src="https://fireworks.ai/icon0.svg" alt="Fireworks AI logo"><span>Fireworks AI</span></div>
+    <h2>The power unit.</h2>
+    <div class="how">
+      <b>How:</b> <span>thirty crews across three rounds is ninety inference calls per stop. High-throughput open-model inference is what makes a tournament affordable. On frontier models you could run the race once and never again.</span>
+    </div>
+    <span class="tag">throughput is the whole sport</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/1QjxtwZ9LoPD2Jlcuq/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 10 -->
+<section class="sponsor">
+  <span class="n">10</span>
+  <div>
+    <div class="brand"><img src="https://braintrust.dev/favicon.svg" alt="Braintrust logo"><span>Braintrust</span></div>
+    <h2>Telemetry.</h2>
+    <div class="how">
+      <b>How:</b> <span>every lap is logged and scored. Which optimisation strategy wins on which shape of code, at what token cost. Memoisation beats vectorisation on this workload, and next race the crew already knows.</span>
+    </div>
+    <span class="tag">the crew gets faster every race</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/eiLBMFy3C266fcAeUT/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 11 -->
+<section class="sponsor">
+  <span class="n">11</span>
+  <div>
+    <div class="brand"><img src="https://www.copilotkit.ai/favicon.ico" alt="CopilotKit logo"><span>CopilotKit</span><span class="plus">+</span><img src="https://elevenlabs.io/icon.svg?c23f5371fdd26632" alt="ElevenLabs logo"><span>ElevenLabs</span></div>
+    <h2>Talk to the pit wall.</h2>
+    <div class="exchange">
+      <div class="you"><b>YOU, OVER RADIO</b>&ldquo;Box, box. Kill everything slower than three hundred milliseconds.&rdquo;</div>
+      <div class="crew"><b>CREW, 1.2s LATER</b>&ldquo;Copy. Twenty two bays retired. Eight still running. Fastest is bay twelve.&rdquo;</div>
+    </div>
+    <div class="pair">
+      <div>
+        <h3>CopilotKit</h3>
+        <p><b>Turns the sentence into a real call on the swarm.</b> A <code>useCopilotAction</code> handler kills, spawns, and re-seeds bays. The grid culls while you are still speaking.</p>
+      </div>
+      <div>
+        <h3>ElevenLabs</h3>
+        <p><b>Your voice in, the crew's voice back.</b> Speech to text drives the command, and the confirmation comes back over team radio. Two way, not narration.</p>
+      </div>
+    </div>
+    <span class="tag">both of them change the race, neither just watches it</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/2J41F8POcAVv69iscS/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 12 -->
+<section class="solo">
+  <span class="n">12</span>
+  <div>
+    <div class="kicker green">Chequered flag</div>
+    <h2>Two ways to run the crew.</h2>
+    <div class="modes">
+      <div class="mode">
+        <h3>PER PR</h3>
+        <p><b>The guardrail.</b> Every PR gets a pit stop. Nothing merges slower than it arrived. This is the habit, and it runs forever.</p>
+      </div>
+      <div class="mode">
+        <h3>FULL SWEEP</h3>
+        <p><b>The season opener.</b> Point it at the whole codebase, find the ten slowest paths, and race all of them overnight. This is the number that wins the meeting.</p>
+      </div>
+    </div>
+    <div class="next">
+      <b>Next lane: #security.</b> Dependabot tells you about the vulnerability and opens a PR that breaks your build. Those dead PRs rot in every repo on earth. Same crew, same garage, one different oracle: the exploit stops reproducing, and the tests stay green.
+    </div>
+  </div>
+  <figure><img src="https://media.giphy.com/media/z7bV9ytXm0mYaot2mi/giphy.gif" alt=""></figure>
+</section>
+
+<div class="hint">↓ / → to advance</div>
+
+<script>
+  // Three tournament rounds. Bays shrink, lap times fall, one takes P1.
+  const LIGHTS_OUT = 2400;
+  const rounds = [
+    {label: 'ROUND 1  ·  30 BAYS', n: 30, cols: 10, lo: 300, hi: 840},
+    {label: 'ROUND 2  ·  TOP 10 MUTATED', n: 10, cols: 10, lo: 140, hi: 310},
+    {label: 'ROUND 3  ·  TOP 3 REFINED', n: 3, cols: 3, lo: 91, hi: 130}
+  ];
+  const host = document.getElementById('rounds');
+  let t = LIGHTS_OUT;
+
+  rounds.forEach((r, ri) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'round';
+    wrap.style.animationDelay = t + 'ms';
+
+    const lab = document.createElement('div');
+    lab.className = 'rlabel';
+    lab.textContent = r.label;
+    wrap.appendChild(lab);
+
+    const grid = document.createElement('div');
+    grid.className = 'bays';
+    grid.style.gridTemplateColumns = `repeat(${r.cols},1fr)`;
+
+    // lap times: descending so the winner is unambiguous
+    const times = Array.from({length: r.n}, (_, k) =>
+      Math.round(r.lo + (r.hi - r.lo) * (k / Math.max(r.n - 1, 1)))
+    ).sort((a, b) => b - a);
+
+    times.forEach((ms, k) => {
+      const b = document.createElement('div');
+      const best = ms === Math.min(...times);
+      const isFinal = ri === rounds.length - 1;
+      b.className = 'bay ' + (isFinal && best ? 'p1' : best ? 'ok' : k < r.n / 2 ? 'mid' : 'ok');
+      b.textContent = ms;
+      b.style.animationDelay = (t + 200 + Math.random() * 700) + 'ms';
+      grid.appendChild(b);
+    });
+
+    wrap.appendChild(grid);
+    host.appendChild(wrap);
+    t += 1500;
+  });
+
+  const slides = [...document.querySelectorAll('section')];
+  let i = 0;
+  addEventListener('keydown', e => {
+    if (['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)) {
+      e.preventDefault(); i = Math.min(i + 1, slides.length - 1); slides[i].scrollIntoView();
+    }
+    if (['ArrowUp','ArrowLeft','PageUp'].includes(e.key)) {
+      e.preventDefault(); i = Math.max(i - 1, 0); slides[i].scrollIntoView();
+    }
+  });
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) i = slides.indexOf(en.target); });
+  }, {threshold:.5});
+  slides.forEach(s => io.observe(s));
+</script>
+</body>
+</html>

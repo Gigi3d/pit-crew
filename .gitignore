@@ -1,0 +1,20 @@
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# secrets
+.env
+
+# race artifacts (regenerated on every run)
+race_events.jsonl
+race_result.json
+
+# node (for the CopilotKit UI, once created)
+node_modules/
+.next/
+
+# os
+.DS_Store

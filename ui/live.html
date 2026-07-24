@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Crew live</title>
+<style>
+  :root{--bg:#08080a;--panel:#101014;--line:#1e1e26;--fg:#fff;--dim:#8a8a95;
+    --red:#e10600;--green:#00d46a;--amber:#ffc400;--mono:ui-monospace,Menlo,monospace}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;padding:20px}
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:20px}
+  .logo{font-size:1.35rem;font-weight:850;letter-spacing:-.03em;text-transform:uppercase}
+  .logo em{font-style:normal;color:var(--red)}
+  .repo{font-family:var(--mono);font-size:.82rem;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:.35rem .7rem}
+  .repo b{color:var(--fg)}
+  .status{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;color:var(--dim)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--dim)}
+  .dot.live{background:var(--green);animation:pulse 1.1s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  button{font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;cursor:pointer;background:var(--red);color:#fff;border:0;border-radius:6px;padding:.6rem 1.1rem;font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .stat .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:var(--dim);margin-bottom:8px}
+  .stat .v{font-family:var(--mono);font-size:clamp(1.3rem,2.6vw,2rem);letter-spacing:-.02em}
+  .stat .v.g{color:var(--green)}.stat .v.a{color:var(--amber)}.stat .v.r{color:var(--red)}
+  .wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .panel h2{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;color:var(--dim);margin-bottom:14px;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .bay{background:#16161c;border:1px solid var(--line);border-radius:8px;padding:10px 8px;min-height:74px;display:flex;flex-direction:column;justify-content:space-between;transition:.2s}
+  .bay .id{font-family:var(--mono);font-size:.6rem;color:var(--dim)}
+  .bay .st{font-family:var(--mono);font-size:.62rem;color:var(--dim)}
+  .bay .ms{font-family:var(--mono);font-size:1.05rem}
+  .bay.run{border-color:var(--amber)}.bay.run .st{color:var(--amber)}
+  .bay.done{border-color:rgba(0,212,106,.5);background:rgba(0,212,106,.07)}
+  .bay.done .ms,.bay.done .st{color:var(--green)}
+  .bay.dq{background:#141418;opacity:.5}.bay.dq .st{color:var(--red)}
+  .bay.p1{border-color:#fff;background:rgba(255,255,255,.1);transform:scale(1.04);box-shadow:0 0 22px rgba(255,255,255,.18)}
+  .bay.p1 .ms,.bay.p1 .st{color:#fff}
+  .bay.killed{opacity:.15;transform:scale(.94)}
+  .lb{display:flex;flex-direction:column;gap:6px}
+  .row{display:flex;gap:10px;padding:8px 10px;border-radius:7px;background:#16161c;font-family:var(--mono);font-size:.8rem}
+  .row .p{color:var(--dim);width:26px}.row .b{flex:1}.row .t{color:var(--green)}
+  .row.top{background:rgba(255,255,255,.09)}.row.top .t{color:#fff}
+  .radio{display:flex;flex-direction:column;gap:8px}
+  .msg{font-family:var(--mono);font-size:.75rem;line-height:1.45;padding:.55rem .7rem;border-radius:7px;background:#16161c;border-left:3px solid var(--line)}
+  .msg b{display:block;font-size:.55rem;letter-spacing:.18em;color:var(--dim);margin-bottom:.3rem}
+  .msg.you{border-left-color:var(--red)}.msg.crew{border-left-color:var(--green)}
+  .cmd{display:flex;gap:8px;margin-top:12px}
+  .cmd input{flex:1;background:#0c0c10;border:1px solid var(--line);border-radius:7px;color:var(--fg);font-family:var(--mono);font-size:.78rem;padding:.55rem .7rem}
+  .cmd button{background:#16161c;border:1px solid var(--line);color:var(--dim)}
+  @media(max-width:980px){.wrap{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Pit<em>&nbsp;</em>Crew</div>
+  <div class="repo"><b>bitmask-stack/bitmask-core</b> &nbsp;·&nbsp; PR #482 &nbsp;·&nbsp; <b>parse_events()</b> &nbsp;·&nbsp; <span style="color:var(--amber)">SAMPLE FN</span></div>
+  <div class="status"><span class="dot" id="dot"></span><span id="phase">READY</span></div>
+  <button id="run">RUN RACE</button>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="k">BASELINE</div><div class="v" id="s-base">·</div></div>
+  <div class="stat"><div class="k">FASTEST LAP</div><div class="v g" id="s-best">·</div></div>
+  <div class="stat"><div class="k">SPEEDUP</div><div class="v a" id="s-mult">·</div></div>
+  <div class="stat"><div class="k">LEGAL / DQ</div><div class="v r" id="s-dq">0 / 0</div></div>
+</div>
+
+<div class="wrap">
+  <div class="panel"><h2>Thirty bays</h2><div class="grid" id="grid"></div></div>
+  <div>
+    <div class="panel"><h2>Leaderboard</h2><div class="lb" id="lb"></div></div>
+    <div class="panel" style="margin-top:20px">
+      <h2>Team radio</h2>
+      <div class="radio" id="radio"></div>
+      <div class="cmd">
+        <input id="cmd" placeholder="kill everything slower than 5ms" />
+        <button id="send">SEND</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const grid = $('grid'), lb = $('lb'), radio = $('radio');
+let bays = {};   // bay -> {ms, state, strategy}
+
+function ensureBay(n){
+  if ($('bay'+n)) return;
+  const el = document.createElement('div');
+  el.className = 'bay'; el.id = 'bay'+n;
+  el.innerHTML = `<div class="id">BAY ${String(n).padStart(2,'0')}</div><div class="ms">&nbsp;</div><div class="st">QUEUED</div>`;
+  grid.appendChild(el);
+}
+function paintBay(e){
+  ensureBay(e.bay);
+  const el = $('bay'+e.bay);
+  el.className = 'bay ' + (e.state==='done'?'done':e.state==='dq'?'dq':'run');
+  el.querySelector('.ms').textContent = e.candidate_ms ? e.candidate_ms+'ms' : ' ';
+  el.querySelector('.st').textContent = e.state==='dq' ? 'DQ' : (e.strategy||'').toUpperCase().slice(0,14) || 'RUN';
+  bays[e.bay] = {ms:e.candidate_ms, state:e.state, strategy:e.strategy};
+}
+function refresh(){
+  const done = Object.entries(bays).filter(([,b])=>b.state==='done').map(([n,b])=>({n:+n,...b})).sort((a,b)=>a.ms-b.ms);
+  const dq = Object.values(bays).filter(b=>b.state==='dq').length;
+  $('s-dq').textContent = `${done.length} / ${dq}`;
+  if(done.length){ $('s-best').textContent = done[0].ms+'ms'; }
+  lb.innerHTML = done.slice(0,6).map((b,i)=>`<div class="row ${i===0?'top':''}"><span class="p">P${i+1}</span><span class="b">bay ${String(b.n).padStart(2,'0')} · ${b.strategy}</span><span class="t">${b.ms}ms</span></div>`).join('') || '<div class="row"><span class="p">·</span><span class="b">no legal patches yet</span></div>';
+}
+function say(who, text){
+  const d = document.createElement('div'); d.className = 'msg '+who;
+  d.innerHTML = `<b>${who==='you'?'YOU':'CREW'}</b>${text}`;
+  radio.appendChild(d); radio.scrollTop = radio.scrollHeight;
+}
+
+// --- the actuator core (no model): parse a command, cull the grid ------------
+function command(text){
+  say('you', '“'+text+'”');
+  const m = text.match(/(\d+(\.\d+)?)\s*ms?/);
+  if(/kill|retire|slower|drop/i.test(text) && m){
+    const thr = parseFloat(m[1]); let killed = 0;
+    for(const [n,b] of Object.entries(bays)){
+      if(b.state==='done' && b.ms > thr){ $('bay'+n).classList.add('killed'); b.state='killed'; killed++; }
+    }
+    refresh();
+    const alive = Object.values(bays).filter(b=>b.state==='done').length;
+    say('crew', `Copy. ${killed} bays retired. ${alive} still running.`);
+  } else {
+    say('crew', 'Say: kill everything slower than N ms.');
+  }
+}
+$('send').onclick = ()=>{ const v=$('cmd').value.trim(); if(v){ command(v); $('cmd').value=''; } };
+$('cmd').addEventListener('keydown', e=>{ if(e.key==='Enter') $('send').click(); });
+
+// --- live race over SSE -------------------------------------------------------
+function run(){
+  grid.innerHTML=''; lb.innerHTML=''; radio.innerHTML=''; bays={};
+  for(let i=1;i<=30;i++) ensureBay(i);
+  $('dot').className='dot live'; $('phase').textContent='RACING';
+  const es = new EventSource('/events');
+  es.onmessage = ev => {
+    const e = JSON.parse(ev.data);
+    if(e.type==='lights_out'){ say('crew','Lights out. Thirty bays away.'); }
+    else if(e.type==='bay'){ paintBay(e); refresh(); }
+    else if(e.type==='winner'){
+      const el=$('bay'+e.bay); if(el) el.classList.add('p1');
+      $('s-base').textContent=e.baseline_ms+'ms';
+      $('s-best').textContent=e.candidate_ms+'ms';
+      $('s-mult').textContent=(e.baseline_ms/e.candidate_ms).toFixed(1)+'x';
+      say('crew',`Chequered flag. Bay ${e.bay}, ${e.candidate_ms}ms, ${(e.baseline_ms/e.candidate_ms).toFixed(1)}x. Tests ${e.tests_ok?'green':'RED'}.`);
+    }
+    else if(e.type==='done'){ es.close(); $('dot').className='dot'; $('phase').textContent='COMPLETE'; }
+  };
+  es.onerror = ()=>{ es.close(); $('dot').className='dot'; $('phase').textContent='DISCONNECTED'; };
+}
+$('run').onclick = run;
+run();
+</script>
+</body>
+</html>

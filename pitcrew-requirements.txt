@@ -1,0 +1,18 @@
+# Pit Crew orchestrator (Python). Install with:
+#   pip install -r pitcrew-requirements.txt
+# Note: fireworks-ai currently ships as a pre-release, so install it with --pre:
+#   pip install --pre fireworks-ai
+
+# sponsor SDKs
+daytona            # 30 parallel sandboxes
+fireworks-ai       # patch generation (install with --pre, see above)
+braintrust         # per-bay telemetry
+elevenlabs         # voice in and out
+
+# serving race state to the Next.js / CopilotKit frontend
+fastapi
+uvicorn[standard]  # includes the websocket server for live bay updates
+python-dotenv      # loads .env
+
+# the target repo's own gate
+pytest

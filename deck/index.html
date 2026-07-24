@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thunderdome</title>
+<style>
+  :root{
+    --bg:#050505;
+    --fg:#ffffff;
+    --dim:#8a8a8a;
+    --green:#2bff88;
+    --red:#ff4d4d;
+    --gold:#ffcb13;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    scroll-snap-type:y mandatory;
+    overflow-x:hidden;
+  }
+  section{
+    min-height:100vh;width:100%;
+    scroll-snap-align:start;
+    display:grid;grid-template-columns:1fr 1fr;
+    align-items:center;gap:4rem;
+    padding:6vh 6vw;
+    position:relative;
+    border-bottom:1px solid #141414;
+  }
+  section.solo{grid-template-columns:1fr;text-align:center;justify-items:center}
+
+  .n{
+    position:absolute;top:4vh;left:6vw;
+    font-family:var(--mono);font-size:.8rem;letter-spacing:.25em;
+    color:var(--dim);
+  }
+  .kicker{
+    font-family:var(--mono);font-size:.85rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--green);margin-bottom:1.6rem;
+  }
+  .kicker.red{color:var(--red)}
+  .kicker.gold{color:var(--gold)}
+  h1{
+    font-size:clamp(3.5rem,9vw,8rem);line-height:.92;
+    letter-spacing:-.04em;font-weight:800;
+  }
+  h2{
+    font-size:clamp(2.2rem,5vw,4.2rem);line-height:1.02;
+    letter-spacing:-.03em;font-weight:750;
+  }
+  .lede{
+    font-size:clamp(1.1rem,1.7vw,1.5rem);line-height:1.5;
+    color:var(--dim);margin-top:1.6rem;max-width:34ch;
+  }
+  .solo .lede{max-width:52ch}
+  .tag{
+    display:inline-block;margin-top:2.2rem;padding:.55rem 1.1rem;
+    border:1px solid #262626;border-radius:100px;
+    font-family:var(--mono);font-size:.8rem;color:var(--dim);
+  }
+  .how{
+    margin-top:2rem;padding-left:1.1rem;border-left:2px solid var(--green);
+    font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.55;max-width:38ch;
+  }
+  .how b{color:var(--fg);font-weight:650}
+  .how span{color:var(--dim)}
+
+  figure{width:100%}
+  figure img{
+    width:100%;height:clamp(240px,42vh,460px);object-fit:cover;
+    border-radius:14px;border:1px solid #1c1c1c;display:block;
+  }
+  .solo figure{max-width:640px}
+
+  /* slide 4 race grid */
+  .grid{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:10px;width:100%;
+  }
+  .cell{
+    aspect-ratio:1;border-radius:8px;background:var(--red);
+    opacity:.85;animation:flip .5s ease forwards;
+  }
+  .cell.win{animation:win .6s ease forwards}
+  @keyframes flip{to{background:var(--green)}}
+  @keyframes win{to{background:var(--gold);transform:scale(1.12)}}
+
+  .stat{font-family:var(--mono);font-size:clamp(3rem,7vw,6rem);color:var(--green);letter-spacing:-.03em}
+  .stat.gold{color:var(--gold)}
+
+  .pair{display:flex;gap:2.5rem;flex-wrap:wrap;margin-top:2rem}
+  .pair div{flex:1;min-width:180px}
+  .pair h3{font-size:1.05rem;font-family:var(--mono);color:var(--green);margin-bottom:.5rem;letter-spacing:.05em}
+  .pair p{color:var(--dim);line-height:1.5;font-size:.98rem}
+
+  .hint{
+    position:fixed;bottom:1.4rem;right:1.6rem;z-index:20;
+    font-family:var(--mono);font-size:.72rem;color:#4a4a4a;letter-spacing:.15em;
+  }
+
+  @media (max-width:900px){
+    section{grid-template-columns:1fr;gap:2rem;padding:8vh 7vw;text-align:left}
+    section.solo{text-align:center}
+    .lede,.how{max-width:none}
+    figure img{height:200px}
+    .grid{grid-template-columns:repeat(6,1fr);gap:6px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="solo">
+  <span class="n">01</span>
+  <div>
+    <div class="kicker red">Daytona HackSprint #5</div>
+    <h1>THUNDER<br>DOME</h1>
+    <p class="lede">Thirty agents enter. One patch leaves.</p>
+  </div>
+  <figure><img src="https://media.giphy.com/media/qKZNDWOdFPmQU/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 2 -->
+<section>
+  <span class="n">02</span>
+  <div>
+    <div class="kicker red">The problem</div>
+    <h2>CodeRabbit finds 14 issues in your PR.</h2>
+    <p class="lede">A human fixes them one. at. a. time. Every fix is a guess, and you only ever get to try one.</p>
+  </div>
+  <figure><img src="https://media.giphy.com/media/XbBJTYS9hDeUFpTxwU/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 3 -->
+<section>
+  <span class="n">03</span>
+  <div>
+    <div class="kicker">The move</div>
+    <h2>Don't pick a fix.<br>Run thirty.</h2>
+    <p class="lede">Thirty agents, thirty strategies, thirty sealed machines, all at once. The test suite decides the winner. Not vibes.</p>
+  </div>
+  <figure><img src="https://media.giphy.com/media/ilxOmhdRINAJesM02z/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 4 -->
+<section>
+  <span class="n">04</span>
+  <div>
+    <div class="kicker gold">Live demo</div>
+    <h2>Red to green,<br>in real time.</h2>
+    <p class="lede">First sandbox to pass the suite opens the PR. The other twenty-nine are killed mid-thought.</p>
+    <span class="tag">this runs live on stage</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- 5 -->
+<section>
+  <span class="n">05</span>
+  <div>
+    <div class="kicker">Daytona</div>
+    <h2>Thirty real computers.</h2>
+    <div class="stat">&lt;90ms</div>
+    <div class="how">
+      <b>How:</b> <span>the SDK spawns thirty sandboxes in parallel, each with its own kernel, filesystem, and network. Untrusted AI patches run at full speed with zero blast radius.</span>
+    </div>
+    <span class="tag">without this, the whole idea is impossible</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/b85mPT4Usz7fq/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 6 -->
+<section>
+  <span class="n">06</span>
+  <div>
+    <div class="kicker">CodeRabbit</div>
+    <h2>Supplies the defects.</h2>
+    <div class="how">
+      <b>How:</b> <span>CodeRabbit reviews the PR and its comments become the agents' task list. Real findings on real code, not synthetic bugs we planted to look good.</span>
+    </div>
+    <span class="tag">the input to the entire pipeline</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/2kXLNQypdX9O1A3zxX/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 7 -->
+<section>
+  <span class="n">07</span>
+  <div>
+    <div class="kicker">Fireworks AI</div>
+    <h2>Thirty agents,<br>at once.</h2>
+    <div class="how">
+      <b>How:</b> <span>high-throughput open-model inference makes a thirty-way swarm affordable. Frontier models would cost more per race than the bug is worth. Throughput is the product.</span>
+    </div>
+    <span class="tag">parallelism you can actually pay for</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/26tOZ42Mg6pbTUPHW/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 8 -->
+<section>
+  <span class="n">08</span>
+  <div>
+    <div class="kicker">Braintrust</div>
+    <h2>Which strategy actually won?</h2>
+    <div class="how">
+      <b>How:</b> <span>every candidate patch is scored, and every prompt variant is tracked across races. We learn which repair strategies win on which bug classes, so the swarm gets smarter each run.</span>
+    </div>
+    <span class="tag">green tests are necessary, not sufficient</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/qxe0lvoZCBP1N2qof9/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 9 -->
+<section>
+  <span class="n">09</span>
+  <div>
+    <div class="kicker">CopilotKit + ElevenLabs</div>
+    <h2>You are still the referee.</h2>
+    <div class="pair">
+      <div>
+        <h3>CopilotKit</h3>
+        <p>A sidebar to watch the swarm, steer a strategy, or veto a patch before it ever reaches your branch.</p>
+      </div>
+      <div>
+        <h3>ElevenLabs</h3>
+        <p>Calls the race live. "Sandbox twelve just passed the suite."</p>
+      </div>
+    </div>
+  </div>
+  <figure><img src="https://media.giphy.com/media/1BGgWqTw702Urao0ER/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 10 -->
+<section class="solo">
+  <span class="n">10</span>
+  <div>
+    <div class="kicker gold">Safe by construction</div>
+    <h2>Thirty untrusted agents.<br>Zero blast radius.</h2>
+    <p class="lede">Nothing the swarm writes touches your machine, your network, or your branch. It touches a sealed sandbox, and a human approves what survives.</p>
+    <div class="stat gold" style="margin-top:2rem">Thirty enter. One leaves.</div>
+  </div>
+  <figure><img src="https://media.giphy.com/media/wTsYo3QJQgwtHlopiP/giphy.gif" alt=""></figure>
+</section>
+
+<div class="hint">↓ / → to advance</div>
+
+<script>
+  // race grid: 30 cells flipping red to green, one gold winner
+  const g = document.getElementById('grid');
+  const N = 30, winner = 11;
+  for (let i = 0; i < N; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell' + (i === winner ? ' win' : '');
+    const delay = i === winner ? 900 : 1200 + Math.random() * 2600;
+    c.style.animationDelay = delay + 'ms';
+    g.appendChild(c);
+  }
+
+  // arrow / space navigation between slides
+  const slides = [...document.querySelectorAll('section')];
+  let i = 0;
+  addEventListener('keydown', e => {
+    if (['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)) {
+      e.preventDefault(); i = Math.min(i + 1, slides.length - 1);
+      slides[i].scrollIntoView();
+    }
+    if (['ArrowUp','ArrowLeft','PageUp'].includes(e.key)) {
+      e.preventDefault(); i = Math.max(i - 1, 0);
+      slides[i].scrollIntoView();
+    }
+  });
+  // keep the index in sync when scrolling manually
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) i = slides.indexOf(en.target); });
+  }, {threshold: .5});
+  slides.forEach(s => io.observe(s));
+</script>
+</body>
+</html>

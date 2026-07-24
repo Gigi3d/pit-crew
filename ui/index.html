@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Crew race console</title>
+<style>
+  :root{
+    --bg:#08080a; --panel:#101014; --line:#1e1e26;
+    --fg:#fff; --dim:#8a8a95;
+    --red:#e10600; --green:#00d46a; --amber:#ffc400; --blue:#4d9fff;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    -webkit-font-smoothing:antialiased;min-height:100vh;padding:20px;overflow-x:hidden}
+
+  /* ---------- header ---------- */
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:20px}
+  .logo{font-size:1.35rem;font-weight:850;letter-spacing:-.03em;text-transform:uppercase}
+  .logo em{font-style:normal;color:var(--red)}
+  .repo{font-family:var(--mono);font-size:.82rem;color:var(--dim);
+    border:1px solid var(--line);border-radius:6px;padding:.35rem .7rem}
+  .repo b{color:var(--fg);font-weight:600}
+  .status{margin-left:auto;display:flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;color:var(--dim)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--dim)}
+  .dot.live{background:var(--green);animation:pulse 1.1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  button{font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;cursor:pointer;
+    background:var(--red);color:#fff;border:0;border-radius:6px;padding:.6rem 1.1rem;font-weight:600}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
+
+  /* ---------- layout ---------- */
+  .wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .panel h2{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;color:var(--dim);
+    margin-bottom:14px;text-transform:uppercase}
+
+  /* ---------- stat strip ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .stat .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:var(--dim);margin-bottom:8px}
+  .stat .v{font-family:var(--mono);font-size:clamp(1.3rem,2.6vw,2rem);letter-spacing:-.02em;line-height:1}
+  .stat .v.g{color:var(--green)} .stat .v.a{color:var(--amber)} .stat .v.r{color:var(--red)}
+
+  /* ---------- bay grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .bay{background:#16161c;border:1px solid var(--line);border-radius:8px;padding:10px 8px;
+    min-height:74px;display:flex;flex-direction:column;justify-content:space-between;
+    transition:background .25s,border-color .25s,transform .18s}
+  .bay .id{font-family:var(--mono);font-size:.6rem;color:var(--dim);letter-spacing:.1em}
+  .bay .st{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--dim)}
+  .bay .ms{font-family:var(--mono);font-size:1.05rem;letter-spacing:-.02em}
+  .bay.run{border-color:var(--amber)}
+  .bay.run .st{color:var(--amber)}
+  .bay.run::after{content:"";height:2px;background:var(--amber);border-radius:2px;
+    animation:load 1.1s ease-in-out infinite;margin-top:4px}
+  @keyframes load{0%{width:8%}50%{width:88%}100%{width:8%}}
+  .bay.done{border-color:rgba(0,212,106,.5);background:rgba(0,212,106,.07)}
+  .bay.done .ms{color:var(--green)} .bay.done .st{color:var(--green)}
+  .bay.dq{background:#141418;border-color:#2a2a32;opacity:.55}
+  .bay.dq .st{color:var(--red)}
+  .bay.p1{border-color:#fff;background:rgba(255,255,255,.1);transform:scale(1.04);
+    box-shadow:0 0 22px rgba(255,255,255,.18)}
+  .bay.p1 .ms,.bay.p1 .st{color:#fff}
+  .bay.killed{opacity:.2;transform:scale(.94)}
+
+  /* ---------- leaderboard ---------- */
+  .lb{display:flex;flex-direction:column;gap:6px}
+  .row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;
+    background:#16161c;font-family:var(--mono);font-size:.8rem}
+  .row .p{color:var(--dim);width:22px}
+  .row .b{flex:1;color:var(--fg)}
+  .row .t{color:var(--green)}
+  .row.top{background:rgba(255,255,255,.09)}
+  .row.top .t{color:#fff}
+
+  /* ---------- radio ---------- */
+  .radio{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .msg{font-family:var(--mono);font-size:.76rem;line-height:1.45;padding:.6rem .7rem;
+    border-radius:7px;background:#16161c;border-left:3px solid var(--line)}
+  .msg b{display:block;font-size:.56rem;letter-spacing:.18em;color:var(--dim);margin-bottom:.3rem}
+  .msg.you{border-left-color:var(--red)}
+  .msg.crew{border-left-color:var(--green)}
+  .mic{display:flex;align-items:center;gap:9px;margin-top:12px;padding:.65rem .8rem;
+    border:1px dashed var(--line);border-radius:8px;font-family:var(--mono);
+    font-size:.72rem;color:var(--dim)}
+  .mic i{width:8px;height:8px;border-radius:50%;background:var(--red);display:block}
+  .mic.on i{animation:pulse .9s ease-in-out infinite}
+
+  /* ---------- winner ---------- */
+  .winner{margin-top:20px;border:1px solid rgba(0,212,106,.4);background:rgba(0,212,106,.06);
+    border-radius:12px;padding:18px;display:none}
+  .winner.show{display:block;animation:rise .45s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .winner .head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .winner .big{font-family:var(--mono);font-size:clamp(1.6rem,4vw,2.6rem);color:var(--green);letter-spacing:-.03em}
+  .winner .was{font-family:var(--mono);color:var(--dim);text-decoration:line-through}
+  .winner .tagx{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;color:var(--dim);
+    border:1px solid var(--line);border-radius:5px;padding:.3rem .6rem}
+  pre{background:#0c0c10;border:1px solid var(--line);border-radius:8px;padding:12px;
+    overflow-x:auto;font-family:var(--mono);font-size:.76rem;line-height:1.6}
+  .del{color:#ff6b6b} .add{color:var(--green)} .ctx{color:var(--dim)}
+  .acts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .acts button{background:var(--green);color:#04120a}
+  .acts button.no{background:transparent;border:1px solid var(--line);color:var(--dim)}
+  .verify{font-family:var(--mono);font-size:.7rem;color:var(--dim);margin-top:10px}
+  .verify b{color:var(--green)}
+
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .grid{grid-template-columns:repeat(5,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Pit<em>&nbsp;</em>Crew</div>
+  <div class="repo"><b>bitmask-stack/bitmask-core</b> &nbsp;·&nbsp; PR #482 &nbsp;·&nbsp; <b>parse_events()</b></div>
+  <div class="status"><span class="dot live" id="dot"></span><span id="phase">LIGHTS OUT</span></div>
+  <button id="run">RUN RACE</button>
+  <button class="ghost" id="say">SPEAK COMMAND</button>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="k">BASELINE</div><div class="v" id="s-base">847ms</div></div>
+  <div class="stat"><div class="k">FASTEST LAP</div><div class="v g" id="s-best">·</div></div>
+  <div class="stat"><div class="k">SPEEDUP</div><div class="v a" id="s-mult">·</div></div>
+  <div class="stat"><div class="k">BAYS LEGAL / DQ</div><div class="v r" id="s-dq">0 / 0</div></div>
+</div>
+
+<div class="wrap">
+  <div class="panel">
+    <h2>Thirty bays</h2>
+    <div class="grid" id="grid"></div>
+
+    <div class="winner" id="winner">
+      <div class="head">
+        <span class="big" id="w-ms">91ms</span>
+        <span class="was" id="w-was">847ms</span>
+        <span class="tagx" id="w-strategy">STRATEGY: DICT LOOKUP</span>
+        <span class="tagx">BAY 12</span>
+      </div>
+      <pre><span class="ctx">  def parse_events(rows, index):</span>
+<span class="del">-     return [r for r in rows if r.id in [i.id for i in index]]</span>
+<span class="add">+     seen = {i.id for i in index}</span>
+<span class="add">+     return [r for r in rows if r.id in seen]</span></pre>
+      <div class="verify">✓ 240 / 240 tests green &nbsp;·&nbsp; <b>re-verified from a clean checkout in a sandbox that never met the agent</b></div>
+      <div class="acts">
+        <button>APPROVE &amp; OPEN PR</button>
+        <button class="no">DISCARD</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>Leaderboard</h2>
+      <div class="lb" id="lb"><div class="row"><span class="p">·</span><span class="b">waiting for lights out</span></div></div>
+    </div>
+
+    <div class="panel" style="margin-top:20px">
+      <h2>Team radio</h2>
+      <div class="radio" id="radio"></div>
+      <div class="mic" id="mic"><i></i><span>mic idle</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Animated stand-in for the real race. Replace fakeRace() with your event
+// stream; every render function below already takes real-shaped data:
+//   {id, state:'queued'|'run'|'done'|'dq', ms, ratio, strategy}
+// ---------------------------------------------------------------------------
+const N = 30, BASE = 847, P1 = 12;
+const STRATS = ['dict lookup','memoise','vectorise','early exit','set membership',
+  'precompute index','batch io','avoid copy','generator','slots','cache prop','regex compile'];
+
+const $ = id => document.getElementById(id);
+const grid = $('grid'), lb = $('lb'), radio = $('radio');
+let bays = [], timers = [];
+
+function build(){
+  timers.forEach(clearTimeout); timers = [];
+  grid.innerHTML = ''; lb.innerHTML = ''; radio.innerHTML = '';
+  $('winner').classList.remove('show');
+  $('s-best').textContent = '·'; $('s-mult').textContent = '·'; $('s-dq').textContent = '0 / 0';
+  bays = Array.from({length:N}, (_,i) => ({
+    id:i+1, state:'queued', ms:null,
+    strategy: STRATS[i % STRATS.length]
+  }));
+  bays.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'bay'; el.id = 'bay'+b.id;
+    el.innerHTML = `<div class="id">BAY ${String(b.id).padStart(2,'0')}</div>
+                    <div class="ms">&nbsp;</div><div class="st">QUEUED</div>`;
+    grid.appendChild(el);
+  });
+}
+
+function paint(b){
+  const el = $('bay'+b.id);
+  el.className = 'bay ' + (b.state==='run'?'run':b.state==='done'?'done':b.state==='dq'?'dq':'');
+  if (b.id === P1 && b.state === 'done') el.classList.add('p1');
+  el.querySelector('.ms').textContent = b.ms ? b.ms+'ms' : ' ';
+  el.querySelector('.st').textContent =
+    b.state==='queued' ? 'QUEUED' : b.state==='run' ? 'RUNNING' :
+    b.state==='dq' ? 'DQ TESTS' : b.strategy.toUpperCase();
+}
+
+function refresh(){
+  const done = bays.filter(b => b.state==='done').sort((a,b)=>a.ms-b.ms);
+  const dq   = bays.filter(b => b.state==='dq').length;
+  $('s-dq').textContent = `${done.length} / ${dq}`;
+  if (done.length){
+    $('s-best').textContent = done[0].ms+'ms';
+    $('s-mult').textContent = (BASE/done[0].ms).toFixed(1)+'x';
+  }
+  lb.innerHTML = done.slice(0,6).map((b,i) =>
+    `<div class="row ${i===0?'top':''}"><span class="p">P${i+1}</span>
+     <span class="b">bay ${String(b.id).padStart(2,'0')} · ${b.strategy}</span>
+     <span class="t">${b.ms}ms</span></div>`).join('')
+    || '<div class="row"><span class="p">·</span><span class="b">no legal patches yet</span></div>';
+}
+
+function say(who, text){
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.innerHTML = `<b>${who==='you'?'YOU, OVER RADIO':'CREW'}</b>${text}`;
+  radio.appendChild(d);
+}
+const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+function fakeRace(){
+  build();
+  $('phase').textContent = 'LIGHTS OUT'; $('dot').className = 'dot live';
+  say('crew','Lights out. Thirty bays away.');
+
+  bays.forEach((b,i) => {
+    const start = 300 + Math.random()*900;
+    at(start, () => { b.state='run'; paint(b); });
+    // five bays break the tests, the rest land between 91ms and 640ms
+    const dq = [3,9,17,22,28].includes(b.id);
+    const end = start + 1400 + Math.random()*2600;
+    at(end, () => {
+      if (dq){ b.state='dq'; }
+      else { b.state='done'; b.ms = b.id===P1 ? 91 : Math.round(150 + Math.random()*490); }
+      paint(b); refresh();
+    });
+  });
+
+  at(5200, () => { $('phase').textContent='RACE COMPLETE'; $('dot').className='dot'; });
+  at(5400, () => say('crew','Chequered flag. Twenty five legal, five disqualified. Fastest is bay twelve, ninety one milliseconds.'));
+  at(5900, () => $('winner').classList.add('show'));
+}
+
+function voiceDemo(){
+  $('mic').classList.add('on'); $('mic').querySelector('span').textContent = 'listening…';
+  at(1200, () => {
+    $('mic').classList.remove('on'); $('mic').querySelector('span').textContent = 'mic idle';
+    say('you','“Box, box. Kill everything slower than three hundred milliseconds.”');
+  });
+  at(2300, () => {
+    const killed = bays.filter(b => b.state==='done' && b.ms > 300);
+    killed.forEach(b => { $('bay'+b.id).classList.add('killed'); b.state='killed'; });
+    refresh();
+    say('crew',`Copy. ${killed.length} bays retired. ${bays.filter(b=>b.state==='done').length} still running.`);
+  });
+}
+
+$('run').onclick = fakeRace;
+$('say').onclick = voiceDemo;
+fakeRace();
+</script>
+</body>
+</html>
