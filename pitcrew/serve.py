@@ -30,9 +30,11 @@ PORT = 8420
 # The most recent winner, so POST /approve knows what to open and announce.
 # One global is fine for a single-screen demo.
 LAST_WINNER: dict = {}
-# Where the winner's PR lives. Set once you know the repo/PR number.
+# The incoming PR (and where the winning patch's PR opens) lives on
+# Gigi3d/widget-api. Pit Crew races to optimize it, then posts the winner's PR
+# to Discord. Override with the real PR number via PITCREW_PR_URL.
 PR_URL = os.getenv("PITCREW_PR_URL",
-                   "https://github.com/the-builders-burrow/widget-api/pull/1")
+                   "https://github.com/Gigi3d/widget-api/pull/1")
 
 
 class Handler(BaseHTTPRequestHandler):

@@ -40,7 +40,9 @@ def _load_env() -> None:
         key, _, val = line.partition("=")
         # Drop inline comments and surrounding quotes from example-style lines.
         val = val.split("#", 1)[0].strip().strip('"').strip("'")
-        os.environ.setdefault(key.strip(), val)
+        # Skip blanks: an empty line in .env must not shadow a code default.
+        if val:
+            os.environ.setdefault(key.strip(), val)
 
 
 _load_env()
@@ -115,9 +117,11 @@ def announce(
 
 
 if __name__ == "__main__":
-    # Dry-run with the numbers from the real widget-api fix.
+    # Dry-run with the numbers from the real widget-api fix. The PR opens on
+    # Gigi3d/widget-api - the repo the incoming PR came from.
     announce(
-        pr_url="https://github.com/the-builders-burrow/widget-api/pull/1",
+        pr_url=os.getenv("PITCREW_PR_URL",
+                         "https://github.com/Gigi3d/widget-api/pull/1"),
         baseline_ms=619,
         candidate_ms=9,
         strategy="set + join + sort once",

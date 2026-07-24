@@ -9,12 +9,24 @@ can read, not just a bare link.
 ## The flow
 
 ```
-race picks a winner  ->  PR opens on the repo  ->  Pit Crew posts it to Discord
-                                                    (embed + race GIF)
-                                                        |
-                                          CodeRabbit reviews the PR,
-                                          teammates read the result
+PR opens on Gigi3d/widget-api        (a slow function lands)
+        |
+        v
+Pit Crew reads it, 10 agents race    (each tries a different optimisation)
+        |
+        v
+winning patch opens a PR             (back on Gigi3d/widget-api)
+        |
+        v
+Pit Crew posts that PR to Discord    (embed + race GIF)
+        |
+        v
+CodeRabbit reviews it, team reads it
 ```
+
+The source repo is **Gigi3d/widget-api**: that is where the incoming PR comes
+from and where the winning patch's PR opens. Pit Crew is the middle: it runs the
+race and delivers the winner to the channel.
 
 ## What is built (in this repo)
 
