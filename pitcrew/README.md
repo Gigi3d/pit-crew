@@ -11,7 +11,7 @@ tests, the timing, the guard, the ranking, the clean-room verify, is real.
 ## Run the mock race
 
 ```bash
-cd ~/thunderdome
+cd ~/Downloads/pitcrew
 python -m pytest pitcrew/tests/ -q          # engine unit tests
 python -m pitcrew.cli                        # full 30-bay race vs ../widget-api
 python -m pitcrew.cli --bays 12 --workers 6  # smaller, faster

@@ -31,7 +31,7 @@ stubbed, but the tests, timing, guard, ranking, and clean-room verify are all re
 | `ui/live.html` | the console wired to the live engine over SSE |
 | `copilotkit/` | the Next.js voice + action files. See `copilotkit/README.md` |
 | `deck-mvp/` | **the deck to present** (13 slides) |
-| `deck-pitcrew/`, `deck/` | full-vision deck and the Thunderdome alternative |
+| `deck-pitcrew/`, `deck/` | full-vision deck and an alternative cut |
 
 ## The docs, in reading order
 
