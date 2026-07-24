@@ -24,14 +24,14 @@ Beat.
 
 ## 0:25 to 0:40  · the idea (slide 3)
 > "When a PR touches a hot function, I do not send one agent to fix it and hope.
-> I send thirty. Each tries a different optimisation, in its own sandbox, all at
+> I send ten. Each tries a different optimisation, in its own sandbox, all at
 > once. The test suite decides who is even allowed to play. Fastest legal patch wins.
 > Watch."
 
 ## 0:40 to 1:15  · the race, LIVE (the console)
 Hit RUN. Step back. Let the grid do the talking. Narrate lightly.
 
-> "Thirty bays. Each one writes a patch on Fireworks, applies it in a Daytona
+> "Ten bays. Each one writes a patch on Fireworks, applies it in a Daytona
 > sandbox, and runs my real tests. Green passed. The grey ones..." (point) "...broke
 > a test and are disqualified. I am not trusting the model. The tests are trusting it
 > for me."
@@ -64,7 +64,7 @@ Click Approve. Cut to the real PR with CodeRabbit's review.
 
 ## 2:20 to 2:40  · safe, and bigger than me (slide 11, then 13)
 > "Nothing ran on my laptop. Nothing merged without me. The agent could never touch
-> its own tests. That is the only way I would let thirty strangers near a Bitcoin
+> its own tests. That is the only way I would let ten strangers near a Bitcoin
 > wallet." Beat. "I built this for bitmask-core. But every open-source maintainer on
 > earth is drowning in the same PRs. Free for one repo, paid per team, and it markets
 > itself: every fix it opens is signed by the crew."
@@ -72,7 +72,7 @@ Click Approve. Cut to the real PR with CodeRabbit's review.
 ## 2:40 to 3:00  · the line
 Back to the winner card. Slow down. Land it.
 
-> "Thirty mechanics. One car. Four seconds. Thirty agents enter, one patch leaves.
+> "Ten mechanics. One car. Four seconds. Ten agents enter, one patch leaves.
 > Pit Crew."
 
 Stop talking. Let it sit.

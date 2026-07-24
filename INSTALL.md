@@ -51,8 +51,8 @@ What each is for:
 
 | Package | Role |
 |---|---|
-| `daytona` | spawn the 30 parallel sandboxes |
-| `fireworks-ai` | generate the 30 candidate patches |
+| `daytona` | spawn the 10 parallel sandboxes |
+| `fireworks-ai` | generate the 10 candidate patches |
 | `braintrust` | log and score each bay |
 | `elevenlabs` | voice in (speech to text) and out (TTS) |
 | `fastapi` + `uvicorn` | serve live race state to the UI over websocket |

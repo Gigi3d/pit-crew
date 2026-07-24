@@ -15,12 +15,12 @@ your own voice, calm and confident. No music needed; the content carries it.
 On camera or voiceover, over the console at rest.
 > "I run an open-source Bitcoin wallet. Strangers send me pull requests that have to
 > be correct and fast, because slow loses users and wrong loses coins. I cannot
-> benchmark every one by hand, so I built a pit crew. Watch thirty agents fix one in
+> benchmark every one by hand, so I built a pit crew. Watch ten agents fix one in
 > fifteen seconds."
 
 **0:12 to 0:20  · the setup, one breath**
 Point at the header: repo, PR #482, `parse_events()`.
-> "One slow function. One pull request. Thirty sandboxes, each trying a different
+> "One slow function. One pull request. Ten sandboxes, each trying a different
 > fix, all at once."
 
 **0:20 to 0:45  · the race (let it breathe)**
@@ -48,7 +48,7 @@ Click Approve. Cut to the real GitHub PR with the CodeRabbit review on it.
 
 **1:35 to 1:45  · the line that lands**
 Back to the winner card.
-> "Thirty agents enter. One patch leaves. Pit Crew."
+> "Ten agents enter. One patch leaves. Pit Crew."
 
 ---
 
@@ -57,7 +57,7 @@ Back to the winner card.
 - **Record the mock/live console**, not slides. Motion sells this.
 - **One take of the race, uncut.** A visible real race beats a polished edit.
 - **Say the sponsor names once, naturally**, where they do the work: Daytona
-  (the thirty sandboxes), CodeRabbit (the review), Fireworks (the patches),
+  (the ten sandboxes), CodeRabbit (the review), Fireworks (the patches),
   Braintrust (the strategy scores), CopilotKit (the voice command). The Devpost
   text lists them formally; the video just shows them earning their place.
 - **Keep it under 2:00 hard.** Overruns get cut off. Aim 1:45 for margin.

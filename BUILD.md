@@ -2,7 +2,7 @@
 
 Companion to [MVP.md](MVP.md). That file is the hour-by-hour schedule. This one is the repo layout, the contracts, and the code you should write **before Friday** so the morning is assembly rather than invention.
 
-Scope for this hackathon is **performance only**. No security lane, no migration, no sweep. One PR, one function, thirty bays.
+Scope for this hackathon is **performance only**. No security lane, no migration, no sweep. One PR, one function, ten bays.
 
 ---
 
@@ -21,7 +21,7 @@ People lose an hour on Friday realising this.
 
 ## 2. The target repo, `widget-api`
 
-Small, real, and slow in a way that has more than one good fix. That last part matters: if there is exactly one obvious fix, all thirty bays produce the same patch and the tournament looks pointless.
+Small, real, and slow in a way that has more than one good fix. That last part matters: if there is exactly one obvious fix, all ten bays produce the same patch and the tournament looks pointless.
 
 ### `app/events.py`
 ```python
@@ -127,7 +127,7 @@ Step 5 in practice: run `bench/run.py` against the **original** file and the **p
 pitcrew/
   orchestrator/
     race.py          spawn N bays, collect results, rank by ratio
-    strategies.py    the 30 seed prompts (see below)
+    strategies.py    the seed prompts (32; a race uses the first n_bays) (see below)
     verify.py        clean-room re-run of the winner in a fresh sandbox
   bay/
     runner.py        everything in section 4, runs inside the sandbox
@@ -144,7 +144,7 @@ pitcrew/
 ```
 
 ### Strategy seeding is the part people underestimate
-Thirty agents given one prompt write thirty near-identical patches. Seed each bay with a *named, different* angle:
+Ten agents given one prompt write ten near-identical patches. Seed each bay with a *named, different* angle:
 
 ```python
 STRATEGIES = [
@@ -178,7 +178,7 @@ Layout, so you know what you are building toward:
 
 - **Header**: repo, PR number, target function, live status, run and speak buttons
 - **Stat strip**: baseline, fastest lap, speedup, legal vs DQ counts
-- **Bay grid**: 30 tiles, each showing bay number, lap time, and state. Amber while running with a progress shimmer, green when legal, dimmed when disqualified, white and scaled up for P1
+- **Bay grid**: ten tiles, each showing bay number, lap time, and state. Amber while running with a progress shimmer, green when legal, dimmed when disqualified, white and scaled up for P1
 - **Leaderboard**: top six by ratio, live
 - **Team radio**: the transcript, your commands in red, crew replies in green, with a mic indicator
 - **Winner card**: before and after, the actual diff, the clean-room verification line, and Approve or Discard

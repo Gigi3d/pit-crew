@@ -1,8 +1,8 @@
 # Pit Crew product feature doc
 
-**Thirty mechanics. One car. Four seconds.**
+**Ten mechanics. One car. Four seconds.**
 
-Pit Crew makes code faster by racing thirty AI agents against each other in parallel sandboxes. A benchmark scores every attempt, the test suite decides which attempts are legal, and the fastest legal patch wins.
+Pit Crew makes code faster by racing ten AI agents against each other in parallel sandboxes. A benchmark scores every attempt, the test suite decides which attempts are legal, and the fastest legal patch wins.
 
 Status: spec. Nothing below is built yet. Written for Daytona HackSprint #5 and the product that could follow it.
 
@@ -24,9 +24,9 @@ The bottleneck is not intelligence. It is that a human can only run one experime
 
 CPUs have executed dozens of branches simultaneously and discarded the losers for decades, because compute is cheaper than waiting. Sandboxes that boot in under 90ms make that same trade economical for whole machines. Cheap high-throughput inference makes it economical for whole *agents*.
 
-So: spawn thirty isolated attempts, let each try a different optimisation strategy, and let a machine rank them.
+So: spawn ten isolated attempts, let each try a different optimisation strategy, and let a machine rank them.
 
-The entire product depends on one question being answerable without a human: **which of these thirty attempts is best?** For performance work the answer is a benchmark, which is why this domain works and why marketing copy does not.
+The entire product depends on one question being answerable without a human: **which of these ten attempts is best?** For performance work the answer is a benchmark, which is why this domain works and why marketing copy does not.
 
 ## 3. Two oracles, and why both are mandatory
 
@@ -39,7 +39,7 @@ This is the most important design decision in the product.
 
 A binary oracle alone wastes the swarm: the race ends at first pass and the other twenty-nine results are discarded. A continuous oracle alone is dangerous: fast and wrong is worse than slow and right.
 
-Running both in that order (gate, then score) is what turns a lottery into a tournament. Every bay returns usable information, so you can rank all thirty, keep the fastest legal handful, mutate them, and race again.
+Running both in that order (gate, then score) is what turns a lottery into a tournament. Every bay returns usable information, so you can rank all ten, keep the fastest legal handful, mutate them, and race again.
 
 ## 4. Reward hacking is the main technical risk
 
@@ -107,7 +107,7 @@ The intended sequence is sweep to land, per-PR to retain.
 **A race**
 1. Trigger fires (PR, schedule, or manual)
 2. Target selection picks the function or path to optimise
-3. Thirty bays spawn in parallel, each seeded with a different optimisation strategy
+3. Ten bays spawn in parallel, each seeded with a different optimisation strategy
 4. Each bay: apply patch, run tests (gate), run interleaved benchmark (score), report ratio
 5. Illegal patches are discarded, legal ones ranked
 6. Top 10 mutated and re-raced, then top 3 refined and re-raced
@@ -121,7 +121,7 @@ At any point the user can veto a patch, force a different strategy, or stop the 
 
 ### v0, hackathon scope (must exist by 3:30pm Friday)
 - Parallel spawn of N sandboxes with a per-bay agent loop
-- Strategy seeding so the thirty bays attempt genuinely different approaches
+- Strategy seeding so the ten bays attempt genuinely different approaches
 - Test gate and benchmark score, with ratio-based measurement
 - Three-round tournament with mutation of survivors
 - Anti-cheat: read-only tests, clean-room re-verification of the winner
@@ -170,9 +170,9 @@ PR + report
 
 | Component | Provider | Role |
 |---|---|---|
-| Sandboxes | **Daytona** | Thirty isolated machines, sub-90ms spawn. Provides both the safety boundary for untrusted patches and the isolation that makes benchmarks trustworthy. |
+| Sandboxes | **Daytona** | Ten isolated machines, sub-90ms spawn. Provides both the safety boundary for untrusted patches and the isolation that makes benchmarks trustworthy. |
 | Review | **CodeRabbit** | Nominates the slow path on PR review, and re-reviews the winning patch before merge. A benchmark cannot tell you the code is unreadable. |
-| Inference | **Fireworks AI** | Thirty bays across three rounds is ~90 calls per race. High-throughput open models are what make a tournament affordable rather than a one-time stunt. |
+| Inference | **Fireworks AI** | Ten bays across three rounds is ~30 calls per race. High-throughput open models are what make a tournament affordable rather than a one-time stunt. |
 | Evaluation | **Braintrust** | Logs and scores every lap. Learns which strategy class wins on which code shape, at what token cost, so the strategy library improves each race. |
 | Control UI | **CopilotKit** | The pit wall. `useCopilotAction` turns a spoken sentence into a real call on the swarm: kill bays, spawn bays, re-seed a strategy. |
 | Voice | **ElevenLabs** | Team radio, two way. Speech to text carries the command in, TTS speaks the result back. |
@@ -190,7 +190,7 @@ The event asks for agents that operate safely. The honest version:
 ## 11. Open questions
 
 1. **Target selection in sweep mode.** Profiling gives hot paths, but hot does not mean optimisable. Needs a heuristic for "hot and plausibly improvable".
-2. **Strategy diversity.** Thirty agents given the same prompt will produce thirty similar patches. Seeding needs to enforce genuinely different approaches, and the right mechanism is unproven.
+2. **Strategy diversity.** Ten agents given the same prompt will produce ten similar patches. Seeding needs to enforce genuinely different approaches, and the right mechanism is unproven.
 3. **What counts as a win.** Is a 4% improvement worth a PR? There is a threshold below which the review cost exceeds the value, and it is probably repo-specific.
 4. **Benchmark availability.** Most repositories have tests. Far fewer have benchmarks. If Pit Crew has to write the benchmark too, then it is grading its own homework, which reopens every reward-hacking concern in section 4.
 
@@ -198,6 +198,6 @@ Question 4 is the biggest commercial risk and should be tested with real reposit
 
 ## 12. What would make this a business
 
-The wedge is not "AI makes code faster". It is that **compute is now cheaper than an engineer's afternoon**, so exploring thirty options costs less than carefully choosing one.
+The wedge is not "AI makes code faster". It is that **compute is now cheaper than an engineer's afternoon**, so exploring ten options costs less than carefully choosing one.
 
 That logic generalises to any engineering task with a machine-checkable definition of better: performance, dependency migration, security patching, flaky test elimination. Performance is the entry point because the oracle is a number, the result is a headline, and the buyer already has a budget line for cloud spend.

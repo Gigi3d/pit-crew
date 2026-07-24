@@ -1,6 +1,6 @@
 # Pit Crew
 
-**Every PR gets a pit stop.** Thirty AI agents race in parallel isolated sandboxes to
+**Every PR gets a pit stop.** Ten AI agents race in parallel isolated sandboxes to
 make a pull request's code faster; the tests decide who is legal, the fastest patch
 wins, a human approves, and it opens a reviewed PR. Built for **bitmask-core**, an
 open-source Bitcoin wallet, for the **Daytona HackSprint (Friday, July 24 2026)**.

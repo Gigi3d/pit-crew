@@ -119,7 +119,7 @@
   <div>
     <div class="kicker red">Daytona HackSprint #5</div>
     <h1>THUNDER<br>DOME</h1>
-    <p class="lede">Thirty agents enter. One patch leaves.</p>
+    <p class="lede">Ten agents enter. One patch leaves.</p>
   </div>
   <figure><img src="https://media.giphy.com/media/qKZNDWOdFPmQU/giphy.gif" alt=""></figure>
 </section>
@@ -140,8 +140,8 @@
   <span class="n">03</span>
   <div>
     <div class="kicker">The move</div>
-    <h2>Don't pick a fix.<br>Run thirty.</h2>
-    <p class="lede">Thirty agents, thirty strategies, thirty sealed machines, all at once. The test suite decides the winner. Not vibes.</p>
+    <h2>Don't pick a fix.<br>Run ten.</h2>
+    <p class="lede">Ten agents, ten strategies, ten sealed machines, all at once. The test suite decides the winner. Not vibes.</p>
   </div>
   <figure><img src="https://media.giphy.com/media/ilxOmhdRINAJesM02z/giphy.gif" alt=""></figure>
 </section>
@@ -163,10 +163,10 @@
   <span class="n">05</span>
   <div>
     <div class="kicker">Daytona</div>
-    <h2>Thirty real computers.</h2>
+    <h2>Ten real computers.</h2>
     <div class="stat">&lt;90ms</div>
     <div class="how">
-      <b>How:</b> <span>the SDK spawns thirty sandboxes in parallel, each with its own kernel, filesystem, and network. Untrusted AI patches run at full speed with zero blast radius.</span>
+      <b>How:</b> <span>the SDK spawns ten sandboxes in parallel, each with its own kernel, filesystem, and network. Untrusted AI patches run at full speed with zero blast radius.</span>
     </div>
     <span class="tag">without this, the whole idea is impossible</span>
   </div>
@@ -192,9 +192,9 @@
   <span class="n">07</span>
   <div>
     <div class="kicker">Fireworks AI</div>
-    <h2>Thirty agents,<br>at once.</h2>
+    <h2>Ten agents,<br>at once.</h2>
     <div class="how">
-      <b>How:</b> <span>high-throughput open-model inference makes a thirty-way swarm affordable. Frontier models would cost more per race than the bug is worth. Throughput is the product.</span>
+      <b>How:</b> <span>high-throughput open-model inference makes a ten-way swarm affordable. Frontier models would cost more per race than the bug is worth. Throughput is the product.</span>
     </div>
     <span class="tag">parallelism you can actually pay for</span>
   </div>
@@ -240,9 +240,9 @@
   <span class="n">10</span>
   <div>
     <div class="kicker gold">Safe by construction</div>
-    <h2>Thirty untrusted agents.<br>Zero blast radius.</h2>
+    <h2>Ten untrusted agents.<br>Zero blast radius.</h2>
     <p class="lede">Nothing the swarm writes touches your machine, your network, or your branch. It touches a sealed sandbox, and a human approves what survives.</p>
-    <div class="stat gold" style="margin-top:2rem">Thirty enter. One leaves.</div>
+    <div class="stat gold" style="margin-top:2rem">Ten enter. One leaves.</div>
   </div>
   <figure><img src="https://media.giphy.com/media/wTsYo3QJQgwtHlopiP/giphy.gif" alt=""></figure>
 </section>
@@ -250,9 +250,9 @@
 <div class="hint">↓ / → to advance</div>
 
 <script>
-  // race grid: 30 cells flipping red to green, one gold winner
+  // race grid: 10 cells flipping red to green, one gold winner
   const g = document.getElementById('grid');
-  const N = 30, winner = 11;
+  const N = 10, winner = 4;
   for (let i = 0; i < N; i++) {
     const c = document.createElement('div');
     c.className = 'cell' + (i === winner ? ' win' : '');

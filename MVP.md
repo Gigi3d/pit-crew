@@ -2,7 +2,7 @@
 
 Hacking window is **10:00 to 15:30. Five and a half hours.** This document is the scoped-down version of [PRODUCT.md](PRODUCT.md), written so it can actually be finished, while still touching all six sponsor tracks.
 
-**The one sentence:** a pull request comes in, thirty agents race in parallel Daytona sandboxes to make the changed function faster, and the fastest patch that still passes the tests wins.
+**The one sentence:** a pull request comes in, ten agents race in parallel Daytona sandboxes to make the changed function faster, and the fastest patch that still passes the tests wins.
 
 ---
 
@@ -12,7 +12,7 @@ Hacking window is **10:00 to 15:30. Five and a half hours.** This document is th
 |---|---|
 | One repository, prepared in advance | Any repo, auto-detection of commands |
 | One target function, hardcoded | Profiling, target selection, whole-codebase sweep |
-| One round of thirty bays | Three-round tournament with mutation |
+| One round of ten bays | Three-round tournament with mutation |
 | Manual trigger from a button | Real GitHub App, webhooks, install flow |
 | Python (or your fastest language) | Multi-language support |
 | Tests as gate, benchmark as score | Cost ceilings, regression history, strategy library |
@@ -42,19 +42,19 @@ The demo repo is the single biggest determinant of whether the demo lands. It ne
 3. **A benchmark script** that runs the function on a fixed workload and prints a duration.
 4. **A hidden validation set**, used only for final scoring, that the agent never sees in its prompt.
 
-Target a baseline slow enough to be dramatic but fast enough to iterate: roughly 500ms to 2s per benchmark run. Anything slower and thirty parallel bays will not finish inside your demo.
+Target a baseline slow enough to be dramatic but fast enough to iterate: roughly 500ms to 2s per benchmark run. Anything slower and ten parallel bays will not finish inside your demo.
 
 ## 4. Build order, by risk
 
 Always build the thing that could kill the project first.
 
-**10:00 to 11:00. Daytona parallel spawn.** Nothing else. Thirty sandboxes up concurrently, each running a trivial command, results collected. If this does not work you must know at 11:00, not at 14:00, because everything else is worthless without it.
+**10:00 to 11:00. Daytona parallel spawn.** Nothing else. Ten sandboxes up concurrently, each running a trivial command, results collected. If this does not work you must know at 11:00, not at 14:00, because everything else is worthless without it.
 
-**11:00 to 12:15. The bay loop.** Inside one sandbox: receive a patch, apply it, run tests, run the benchmark, return `{legal, ratio}`. Then wire it to the thirty-way spawn with thirty different strategy prompts.
+**11:00 to 12:15. The bay loop.** Inside one sandbox: receive a patch, apply it, run tests, run the benchmark, return `{legal, ratio}`. Then wire it to the ten-way spawn with ten different strategy prompts.
 
-**12:15 to 13:00. Fireworks generates the patches.** Swap in their API for patch generation. Thirty distinct strategy seeds so bays do not all produce the same diff.
+**12:15 to 13:00. Fireworks generates the patches.** Swap in their API for patch generation. Ten distinct strategy seeds so bays do not all produce the same diff.
 
-**13:00 to 14:00. The grid UI.** This is what wins, so give it real time. Thirty tiles, live status, lap times falling, winner highlighted. Do not let this slip.
+**13:00 to 14:00. The grid UI.** This is what wins, so give it real time. Ten tiles, live status, lap times falling, winner highlighted. Do not let this slip.
 
 **14:00 to 14:30. Braintrust.** Log every lap as a scored span: strategy, ratio, legal, tokens.
 
@@ -70,8 +70,8 @@ Each of these is small, but each is genuinely load-bearing. Bolt-ons lose tracks
 
 | Sponsor | Smallest real usage | Effort |
 |---|---|---|
-| **Daytona** | Thirty parallel sandboxes running untrusted patches | Core, unavoidable |
-| **Fireworks** | The model generating all thirty patches | ~20 min, it is an API swap |
+| **Daytona** | Ten parallel sandboxes running untrusted patches | Core, unavoidable |
+| **Fireworks** | The model generating all ten patches | ~20 min, it is an API swap |
 | **Braintrust** | A scored **strategy eval**, not just logging: which optimisation wins, at what reliability, DQs scored zero. `python -m pitcrew.evals` already builds it. | ~20 min |
 | **CopilotKit** | `useCopilotAction` executes a typed or spoken command against the live swarm | ~40 min |
 | **CodeRabbit** | Winner opens a real PR, CodeRabbit reviews it on camera | ~15 min, mostly prep |
@@ -106,7 +106,7 @@ is the co-host and CodeRabbit is a $1,000 track with two judges, so they are pro
 
 1. **ElevenLabs spoken confirmation.** The crew's reply shows as text either way.
 2. **Voice input.** Keep the CopilotKit action, type the command instead of speaking it. The grid still culls, which is the part that matters and the part CopilotKit is judged on.
-3. Drop from thirty bays to ten.
+3. Drop to fewer bays (five still reads as a race). Ten is already the measured Daytona cap, not a target.
 
 **Never cut:** Daytona parallel spawn, the test gate, the grid UI, the clean-room
 re-verification, the **Braintrust strategy eval**, and the **CodeRabbit review on PR #2**.
@@ -116,7 +116,7 @@ Those are the project and the two richest side prizes.
 
 ## 9. What must be on screen at 15:30
 
-- Thirty tiles, visibly running at once
+- Ten tiles, visibly running at once
 - Lap times falling
 - One winner, highlighted
 - A real before and after number from the clean-room run
