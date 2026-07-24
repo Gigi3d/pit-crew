@@ -58,7 +58,9 @@ type Ev =
   | { type: "winner"; bay: number; strategy: string; baseline_ms: number; candidate_ms: number };
 
 // Drive a race by calling `emit` over ~4s, mirroring the real engine's cadence.
-export function runSimRace(emit: (e: Ev) => void, nBays = 10): () => void {
+// Aligns to the PR so the winning lap, the stats, and the winner card all show
+// the same before/after numbers.
+export function runSimRace(emit: (e: Ev) => void, pr: SimPR, nBays = 10): () => void {
   const timers: ReturnType<typeof setTimeout>[] = [];
   const at = (ms: number, fn: () => void) => timers.push(setTimeout(fn, ms));
 
@@ -67,17 +69,19 @@ export function runSimRace(emit: (e: Ev) => void, nBays = 10): () => void {
     emit({ type: "bay", bay: b, state: "queued", candidate_ms: null, strategy: STRATEGIES[b - 1] });
   }
 
-  // One bay is the deliberate loser (disqualified), the rest finish with spread
-  // lap times; the fastest legal one wins.
+  // One bay is the deliberate loser (disqualified). One bay wins with exactly
+  // the PR's candidate time; the rest land slower, spread between there and the
+  // baseline, so the winner is unambiguously fastest.
   const dq = 1 + Math.floor(Math.random() * nBays);
+  let winnerBay = 1 + Math.floor(Math.random() * nBays);
+  if (winnerBay === dq) winnerBay = (winnerBay % nBays) + 1;
+
+  const ceiling = Math.max(pr.candidate_ms + 30, Math.round(pr.baseline_ms * 0.35));
   const laps: Record<number, number> = {};
   for (let b = 1; b <= nBays; b++) {
-    laps[b] = b === dq ? 0 : 40 + Math.floor(Math.random() * 320);
-  }
-  let bestBay = 1;
-  let best = Infinity;
-  for (let b = 1; b <= nBays; b++) {
-    if (b !== dq && laps[b] < best) { best = laps[b]; bestBay = b; }
+    if (b === dq) laps[b] = 0;
+    else if (b === winnerBay) laps[b] = pr.candidate_ms;
+    else laps[b] = pr.candidate_ms + 15 + Math.floor(Math.random() * ceiling);
   }
 
   for (let b = 1; b <= nBays; b++) {
@@ -92,7 +96,13 @@ export function runSimRace(emit: (e: Ev) => void, nBays = 10): () => void {
     );
   }
   at(300 + nBays * 250 + 400, () =>
-    emit({ type: "winner", bay: bestBay, strategy: STRATEGIES[bestBay - 1], baseline_ms: 619, candidate_ms: best }),
+    emit({
+      type: "winner",
+      bay: winnerBay,
+      strategy: STRATEGIES[winnerBay - 1],
+      baseline_ms: pr.baseline_ms,
+      candidate_ms: pr.candidate_ms,
+    }),
   );
 
   return () => timers.forEach(clearTimeout);
