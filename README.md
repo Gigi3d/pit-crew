@@ -7,12 +7,42 @@ open-source Bitcoin wallet, for the **Daytona HackSprint (Friday, July 24 2026)*
 
 This folder is the whole project: working engine, decks, and every planning doc.
 
+## How it works
+
+```
+   ┌────────────────────────────────────────────────────────────────┐
+   │   PIT CREW  ·  every PR gets a pit stop                         │
+   └────────────────────────────────────────────────────────────────┘
+
+   [1]  open the app                ──►  Next.js console, hosted on Vercel
+          │
+          ▼
+   [2]  race runs                   ──►  Daytona     10 sealed sandboxes
+          │  10 agents, one patch        Fireworks   writes every patch
+          │  each · tests gate + bench
+          ▼
+   [3]  winner shown                ──►  Braintrust  scores & ranks each bay
+          │  fastest legal: 619ms → 9ms
+          ▼
+   [4]  "approve the winner"        ──►  CopilotKit  turns words into the action
+          │  typed or spoken             ElevenLabs  voice in / voice out
+          ▼
+   [5]  PR posts to Discord         ──►  webhook + race GIF, real PR link
+          │
+          ▼
+   [6]  CodeRabbit reviews the PR   ──►  CodeRabbit  review lands in the channel
+```
+
+Six sponsor tools, one loop: a slow PR comes in, ten agents race to fix it, the
+fastest legal patch wins, a human approves by voice or text, and the winning PR
+goes out for an automated review.
+
 ## Run it now (no keys)
 
 ```bash
 pip install -r pitcrew-requirements.txt   # or just: pip install pytest
 python3 -m pytest pitcrew/tests widget-api/tests -q   # 13 tests
-python3 -m pitcrew.cli          # full 30-bay race in the terminal
+python3 -m pitcrew.cli          # full 10-bay race in the terminal
 python3 -m pitcrew.serve        # then open http://localhost:8420  (live UI)
 python3 -m pitcrew.evals        # Braintrust-style strategy leaderboard
 python3 hello.py                # stack check (skips services with no key)
