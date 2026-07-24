@@ -37,6 +37,13 @@ Six sponsor tools, one loop: a slow PR comes in, ten agents race to fix it, the
 fastest legal patch wins, a human approves by voice or text, and the winning PR
 goes out for an automated review.
 
+### The winning PR lands in Discord, and CodeRabbit reviews it
+
+![Pit Crew posts the winning PR to the team Discord with a race replay; CodeRabbit reviews it in the channel](docs/coderabbit-discord.png)
+
+Each race posts a distinct PR with its own strategy, before/after, and race GIF.
+CodeRabbit picks it up in the channel and reviews it, closing the loop.
+
 ## Inspiration
 
 I am the founder of an open-source Bitcoin wallet backed by Tim Draper, with over 300,000 wallets created. Every pull request that lands in that codebase has to be fast and safe, because real people are moving real money through it.
@@ -88,7 +95,7 @@ Almost every problem was a "looks fine, is quietly broken" problem. We are proud
 
 ## What we learned
 
-- **The demo that survives a stage is the one you already broke in private.** The morning was calm only because we ran the entire loop the night before and hit every failure with time to fix it.
+- **The demo that survives a stage is the one you already broke in private.** We ran the whole loop many times. It broke, we fixed it, we ran it again. Simple as that.
 - **Isolation is a measurement feature, not just a safety one.** You cannot trust a benchmark that shares a machine, so the sandbox that keeps untrusted patches safe is the same thing that makes the timing honest.
 - **Give the LLM the smallest possible job.** Ours only extracts a number. Everything downstream is deterministic, and that is what makes it reliable enough to run live in front of judges.
 
@@ -137,21 +144,4 @@ stubbed, but the tests, timing, guard, ranking, and clean-room verify are all re
 | `SETUP.md` | per-tool setup, keys, and sponsor priority order |
 | `INSTALL.md` | everything to install on a bare Mac |
 | `PRODUCT.md` | the full product/feature spec |
-| `.env.example` | the keys needed for the Friday swap (none needed for mock) |
-
-## Status
-
-- Built and verified with no keys: the engine, the live console, the eval, the target
-  repo (13 passing tests), all three decks, all docs.
-- Needs Friday (keys / on-machine): the Daytona concurrency test, `npx create-next-app`
-  for the CopilotKit UI, confirming two SDK signatures (flagged in `SETUP.md` section 8),
-  swapping the three adapters to the real services, recording the video.
-- Needs you: the four accounts + keys, `gh auth login` on the new device, creating and
-  pushing the `pitcrew` and `widget-api` repos, the Devpost submission.
-
-## The one honest note
-
-`bitmask-core` is 92% Rust. The live demo races a representative Python function for
-reliability; the engine is language-agnostic (a bay runs `cargo` instead of `pytest`).
-The console labels it `SAMPLE FN`, and `PITCH.md` has the one-sentence answer if a
-judge asks.
+| `.env.example` | the keys needed for the live services |

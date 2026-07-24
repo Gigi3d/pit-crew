@@ -55,7 +55,7 @@ Almost every problem was a "looks fine, is quietly broken" problem. We are proud
 
 ## What we learned
 
-- **The demo that survives a stage is the one you already broke in private.** The morning was calm only because we ran the entire loop the night before and hit every failure with time to fix it.
+- **The demo that survives a stage is the one you already broke in private.** We ran the whole loop many times. It broke, we fixed it, we ran it again. Simple as that.
 - **Isolation is a measurement feature, not just a safety one.** You cannot trust a benchmark that shares a machine, so the sandbox that keeps untrusted patches safe is the same thing that makes the timing honest.
 - **Give the LLM the smallest possible job.** Ours only extracts a number. Everything downstream is deterministic, and that is what makes it reliable enough to run live in front of judges.
 
