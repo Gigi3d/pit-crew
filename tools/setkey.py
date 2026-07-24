@@ -17,6 +17,8 @@ VALID = {
     "BRAINTRUST_API_KEY",
     "ELEVENLABS_API_KEY",
     "ELEVENLABS_VOICE_ID",
+    "DISCORD_WEBHOOK_URL",
+    "PITCREW_PR_URL",
 }
 
 if len(sys.argv) != 2:
@@ -26,7 +28,8 @@ var = sys.argv[1].upper()
 if var not in VALID:
     sys.exit(f"{var} is not one of: {', '.join(sorted(VALID))}")
 
-env = Path(__file__).parent / ".env"
+# .env lives at the repo root, one level up from this tools/ dir.
+env = Path(__file__).resolve().parent.parent / ".env"
 if not env.is_file():
     sys.exit(".env not found - copy it from .env.example first")
 

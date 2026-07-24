@@ -17,11 +17,33 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Optional
 
 import httpx
 
 from .gif import render_race_gif
+
+
+def _load_env() -> None:
+    """Read repo-root .env into the environment, no dependency required.
+
+    Only fills vars that are not already set, so a real shell export always wins.
+    """
+    env = Path(__file__).resolve().parent.parent / ".env"
+    if not env.is_file():
+        return
+    for line in env.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        # Drop inline comments and surrounding quotes from example-style lines.
+        val = val.split("#", 1)[0].strip().strip('"').strip("'")
+        os.environ.setdefault(key.strip(), val)
+
+
+_load_env()
 
 BRAND = 0xF2D25A  # pit-crew gold
 
