@@ -89,3 +89,29 @@ is deterministic. That is why the demo is robust: three independent input paths
 4. Everything network-dependent fails: the pre-recorded screen capture (SETUP.md section 10).
 
 You are never one failure away from a dead stage.
+
+## Signature verification (resolved 2026-07-24)
+
+SETUP.md section 8 item 2 flagged `useCopilotAction`'s shape as unconfirmed
+because their reference page 404'd. Resolved against the installed
+`@copilotkit/react-core@1.63.1` type definitions:
+
+```ts
+useCopilotAction<const T extends Parameter[] | [] = []>(
+  action: FrontendAction<T> | CatchAllFrontendAction,
+  dependencies?: any[],
+): void
+```
+
+**The shape in `useRaceActions.ts` is correct** - `{name, description,
+parameters, handler}` with `parameters` as an array of `{name, type,
+description, required}`. No changes needed.
+
+One thing worth knowing: the package now describes `useCopilotAction` as
+"a legacy hook maintained for backwards compatibility". It is not removed and
+it works - it registers the action with CopilotContext rather than calling
+hooks conditionally, so action types can change between renders. There is also
+a `@copilotkit/react-core/v2` entry point.
+
+For a one-day build, stay on `useCopilotAction`: it is the documented path,
+it works in 1.63.1, and swapping to v2 on the day buys nothing a judge can see.
