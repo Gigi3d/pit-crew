@@ -71,7 +71,9 @@
       "Bash(echo \"=== elevenlabs now? ===\")",
       "Bash(echo \"widget-api ls-remote exit: $? \\(0=exists/empty, 128=missing\\)\")",
       "Bash(./.venv/bin/python concurrency_test.py 30)",
-      "Bash(./.venv/bin/python concurrency_test.py 12)"
+      "Bash(./.venv/bin/python concurrency_test.py 12)",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' https://api.elevenlabs.io/v1/voices -H 'xi-api-key: __TRACKED_VAR__')",
+      "Bash(./.venv/bin/python fireworks_load_test.py 10)"
     ]
   }
 }
