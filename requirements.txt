@@ -1,0 +1,17 @@
+# The mock race, the live console, and the tests need NOTHING here - they are
+# pure standard library. These are for the extras:
+#   Discord bot (pit_wall.py) : httpx, Pillow
+#   Friday live services      : the four SDKs below
+#
+#   pip install -r requirements.txt
+
+# Discord challenge: post the winning PR with a race GIF
+httpx>=0.27
+Pillow>=10
+
+# Live services (Friday swap). pydantic is pinned by daytona; do not downgrade.
+daytona>=0.200
+--pre
+fireworks-ai>=1.2
+braintrust>=0.30
+elevenlabs>=2.5

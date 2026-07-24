@@ -18,3 +18,6 @@ node_modules/
 
 # os
 .DS_Store
+
+# generated race GIF (rebuilt by pitcrew.gif on demand)
+assets/race.gif
