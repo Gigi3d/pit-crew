@@ -39,7 +39,13 @@ class FireworksPatchProvider:
     so this module loads with no key and no SDK.
     """
     mode = "fireworks"
-    model = "accounts/fireworks/models/deepseek-v3p1"
+    # deepseek-v3p1 (SETUP.md's recommendation) DOES NOT EXIST - verified against
+    # the live account on 2026-07-24, which exposes exactly 6 models. Tested the
+    # realistic candidates on this repo's actual patch prompt; deepseek-v4-pro was
+    # fastest at 8.3s and passed 10/10 concurrently. Override with FIREWORKS_MODEL.
+    model = os.environ.get(
+        "FIREWORKS_MODEL", "accounts/fireworks/models/deepseek-v4-pro"
+    )
 
     def __init__(self):
         if not os.environ.get("FIREWORKS_API_KEY"):

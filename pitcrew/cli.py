@@ -33,7 +33,28 @@ def main(argv=None):
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--full-fixture", action="store_true",
                     help="use the target's real fixture.json instead of a mini one")
+    ap.add_argument("--real-patches", action="store_true",
+                    help="generate patches with Fireworks instead of the mock set")
+    ap.add_argument("--braintrust", action="store_true",
+                    help="log one scored span per bay to Braintrust")
     args = ap.parse_args(argv)
+
+    # The Friday swap. Each adapter is opt-in and fails loudly on a bad key, so a
+    # missing service can never silently degrade into a mock result on stage.
+    if args.real_patches:
+        from .providers import FireworksPatchProvider
+        provider = FireworksPatchProvider()
+        mode = f"FIREWORKS ({provider.model.split('/')[-1]})"
+    else:
+        provider = MockPatchProvider()
+        mode = "MOCK (no keys)"
+
+    if args.braintrust:
+        from .telemetry import BraintrustTelemetry
+        telemetry = BraintrustTelemetry()
+        mode += " + braintrust"
+    else:
+        telemetry = NullTelemetry()
 
     target = os.path.abspath(args.target)
     if not os.path.isdir(target):
@@ -60,13 +81,14 @@ def main(argv=None):
         elif e["type"] == "no_winner":
             print(f"\n{C['r']}no legal patch this race{C['x']}")
 
-    print(f"{C['d']}target : {target}\nfixture: {fixture}\nmode   : MOCK (no keys){C['x']}")
+    print(f"{C['d']}target : {target}\nfixture: {fixture}\nmode   : {mode}{C['x']}")
     result = run_race(
         target_repo=target, fixture=fixture,
-        provider=MockPatchProvider(), n_bays=args.bays,
-        telemetry=NullTelemetry(), emit=emit, max_workers=args.workers,
+        provider=provider, n_bays=args.bays,
+        telemetry=telemetry, emit=emit, max_workers=args.workers,
     )
     ev_file.close()
+    telemetry.flush()  # Braintrust logs on a background thread
 
     legal = [r for r in result.results if r.legal]
     dqs = [r for r in result.results if not r.legal]
