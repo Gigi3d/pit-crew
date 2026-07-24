@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pit Crew MVP</title>
+<style>
+  :root{
+    --bg:#0a0a0c;--fg:#ffffff;--dim:#8d8d95;
+    --red:#e10600;--green:#00d46a;--amber:#ffc400;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;scroll-snap-type:y mandatory;overflow-x:hidden}
+  section{min-height:100vh;width:100%;scroll-snap-align:start;
+    display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;
+    padding:6vh 6vw;position:relative;border-bottom:1px solid #1b1b20}
+  section.solo{grid-template-columns:1fr;text-align:center;justify-items:center}
+  section::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+    background:linear-gradient(180deg,var(--red),transparent)}
+  .n{position:absolute;top:4vh;left:6vw;font-family:var(--mono);
+    font-size:.8rem;letter-spacing:.25em;color:var(--dim)}
+  .kicker{font-family:var(--mono);font-size:.85rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--red);margin-bottom:1.5rem}
+  .kicker.green{color:var(--green)}
+  h1{font-size:clamp(3.4rem,8.5vw,7.5rem);line-height:.9;letter-spacing:-.045em;
+    font-weight:850;text-transform:uppercase}
+  h2{font-size:clamp(2.1rem,4.8vw,4rem);line-height:1.02;letter-spacing:-.03em;font-weight:750}
+  .lede{font-size:clamp(1.1rem,1.7vw,1.5rem);line-height:1.5;color:var(--dim);
+    margin-top:1.5rem;max-width:34ch}
+  .solo .lede{max-width:54ch;margin-left:auto;margin-right:auto}
+  .tag{display:inline-block;margin-top:2rem;padding:.55rem 1.1rem;border:1px solid #2a2a31;
+    border-radius:4px;font-family:var(--mono);font-size:.78rem;color:var(--dim);letter-spacing:.08em}
+  .how{margin-top:1.9rem;padding-left:1.1rem;border-left:3px solid var(--red);
+    font-size:clamp(1rem,1.35vw,1.18rem);line-height:1.55;max-width:39ch}
+  .how b{color:var(--fg);font-weight:650}
+  .how span{color:var(--dim)}
+  .lap{font-family:var(--mono);font-size:clamp(2.6rem,6.5vw,5.5rem);color:var(--green);
+    letter-spacing:-.03em;line-height:1;margin-top:.6rem}
+  .lap small{font-size:.28em;color:var(--dim);letter-spacing:.2em;display:block;margin-top:.7rem}
+
+  figure{width:100%}
+  figure img{width:100%;height:clamp(230px,42vh,450px);object-fit:cover;
+    border-radius:10px;border:1px solid #22222a;display:block}
+  .solo figure{max-width:620px;margin-top:2.5rem}
+
+  .lights{display:flex;gap:14px;justify-content:center;margin-bottom:2rem}
+  .lights i{width:clamp(26px,4.5vw,50px);aspect-ratio:1;border-radius:50%;background:#26262e;
+    display:block;animation:lightOn .3s ease forwards,lightOff .3s ease 2.4s forwards}
+  @keyframes lightOn{to{background:var(--red);box-shadow:0 0 26px rgba(225,6,0,.75)}}
+  @keyframes lightOff{to{background:#26262e;box-shadow:none}}
+  .round{margin-bottom:1.1rem;opacity:0;animation:fade .4s ease forwards}
+  @keyframes fade{to{opacity:1}}
+  .rlabel{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;color:var(--dim);margin-bottom:.5rem}
+  .bays{display:grid;gap:6px}
+  .bay{aspect-ratio:2.1;border-radius:4px;background:#2a2a32;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:clamp(.5rem,.85vw,.72rem);color:#0a0a0c;
+    opacity:0;animation:pop .35s ease forwards}
+  @keyframes pop{to{opacity:1}}
+  .bay.ok{background:var(--green)}
+  .bay.mid{background:var(--amber)}
+  .bay.bad{background:#3a3a44;color:var(--dim)}
+  .bay.p1{background:#fff;box-shadow:0 0 18px rgba(255,255,255,.45);font-weight:700}
+
+  .big{font-family:var(--mono);letter-spacing:-.04em;line-height:1}
+  .before{font-size:clamp(2rem,5vw,3.6rem);color:var(--dim);text-decoration:line-through}
+  .after{font-size:clamp(4rem,13vw,11rem);color:var(--green);font-weight:700}
+  .mult{font-size:clamp(1.4rem,3vw,2.4rem);color:var(--fg);margin-top:1rem;font-family:var(--mono)}
+  .check{margin-top:1.4rem;font-family:var(--mono);color:var(--green);font-size:1.05rem}
+  .clean{margin-top:.6rem;font-family:var(--mono);color:var(--dim);font-size:.9rem}
+
+  .pair{display:flex;gap:2.4rem;flex-wrap:wrap;margin-top:1.9rem}
+  .pair div{flex:1;min-width:190px}
+  .pair h3{font-family:var(--mono);font-size:1rem;color:var(--red);margin-bottom:.5rem;letter-spacing:.06em}
+  .pair p{color:var(--dim);line-height:1.5;font-size:.97rem}
+  .radio{margin-top:1.4rem;font-family:var(--mono);color:var(--green);font-size:1.05rem;letter-spacing:.05em}
+
+  .ladder{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:2.2rem;text-align:left}
+  .rung{flex:1;min-width:210px;border:1px solid #26262e;border-radius:8px;padding:1.2rem 1.3rem}
+  .rung.now{border-color:var(--green)}
+  .rung.sec{border-color:rgba(225,6,0,.5)}
+  .rung h3{font-family:var(--mono);font-size:.76rem;letter-spacing:.16em;margin-bottom:.55rem;color:var(--dim)}
+  .rung.now h3{color:var(--green)}
+  .rung.sec h3{color:var(--red)}
+  .rung p{color:var(--dim);font-size:.94rem;line-height:1.5}
+  .rung b{color:var(--fg);font-weight:650}
+
+  .tagline{font-size:clamp(1.5rem,2.8vw,2.3rem);color:var(--fg);font-weight:650;
+    margin-top:1.5rem;letter-spacing:-.01em}
+  .hashes{display:flex;gap:.9rem;justify-content:center;margin-top:1.8rem;flex-wrap:wrap}
+  .hashes span{font-family:var(--mono);font-size:clamp(.8rem,1.2vw,1rem);letter-spacing:.06em;
+    padding:.45rem 1rem;border-radius:100px;border:1px solid}
+  .hashes .perf{color:var(--green);border-color:rgba(0,212,106,.45);background:rgba(0,212,106,.07)}
+  .hashes .sec{color:var(--red);border-color:rgba(225,6,0,.45);background:rgba(225,6,0,.07)}
+
+  .tiers{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:2.2rem;text-align:left}
+  .tier{flex:1;min-width:200px;border:1px solid #26262e;border-radius:8px;padding:1.2rem 1.3rem}
+  .tier.hero{border-color:var(--green);background:rgba(0,212,106,.05)}
+  .tier h3{font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;color:var(--dim);margin-bottom:.6rem}
+  .tier.hero h3{color:var(--green)}
+  .price{font-family:var(--mono);font-size:clamp(1.5rem,3vw,2.1rem);color:var(--fg);
+    letter-spacing:-.03em;margin-bottom:.6rem;line-height:1}
+  .price em{font-style:normal;font-size:.42em;color:var(--dim);letter-spacing:0}
+  .tier p{color:var(--dim);font-size:.92rem;line-height:1.5}
+  .proj{display:flex;gap:2.4rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;
+    font-family:var(--mono);font-size:clamp(1rem,1.9vw,1.4rem);color:var(--dim)}
+  .proj b{color:var(--fg);font-weight:700}
+  .proj b.g{color:var(--green)}
+
+
+  /* sponsor slides invert to white so the stack reads as its own chapter */
+  section.sponsor{
+    --fg:#0a0a0c; --dim:#5b5b66; --green:#00a352;
+    background:#ffffff; color:var(--fg);
+    border-bottom:1px solid #e4e4ea;
+  }
+  section.sponsor::before{background:linear-gradient(180deg,var(--red),rgba(225,6,0,0))}
+  section.sponsor .tag{border-color:#d8d8e0;background:#fafafc}
+  section.sponsor figure img{border-color:#e4e4ea}
+  section.sponsor .n{color:#a0a0ab}
+
+
+  .brand{display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .brand img{height:clamp(36px,4.6vw,54px);width:auto;display:block;border-radius:8px}
+  .brand span{font-size:clamp(1.25rem,2.3vw,1.85rem);font-weight:750;
+    letter-spacing:-.02em;color:var(--fg);line-height:1}
+  .brand .plus{color:var(--dim);font-weight:400;font-size:1.3rem;margin:0 .15rem}
+
+
+  .brand .mark{height:clamp(36px,4.6vw,54px);width:auto;display:block}
+
+
+  .exchange{margin-top:1.7rem;display:flex;flex-direction:column;gap:.65rem;max-width:48ch}
+  .exchange div{font-family:var(--mono);font-size:clamp(.82rem,1.1vw,.98rem);line-height:1.5;
+    padding:.7rem .9rem;border-radius:8px;border:1px solid #e0e0e8;background:#fafafc}
+  .exchange .you{border-left:3px solid var(--red)}
+  .exchange .crew{border-left:3px solid var(--green)}
+  .exchange b{display:block;font-size:.6rem;letter-spacing:.2em;color:var(--dim);
+    margin-bottom:.35rem;font-weight:600}
+  .pair p code{font-family:var(--mono);font-size:.88em;background:#f0f0f5;
+    padding:.1em .35em;border-radius:4px}
+  .pair p b{color:var(--fg);font-weight:650}
+
+  .hint{position:fixed;bottom:1.4rem;right:1.6rem;z-index:20;font-family:var(--mono);
+    font-size:.72rem;color:#4c4c55;letter-spacing:.15em}
+  @media (max-width:900px){
+    section{grid-template-columns:1fr;gap:2rem;padding:8vh 8vw}
+    .lede,.how{max-width:none}
+    figure img{height:195px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="solo">
+  <span class="n">01</span>
+  <div>
+    <div class="kicker">Daytona HackSprint #5</div>
+    <h1>Pit&nbsp;Crew</h1>
+    <p class="tagline">Every PR gets a pit stop.</p>
+    <p class="lede">Thirty mechanics. One car. Four seconds.</p>
+    <div class="hashes"><span class="perf">#performance</span><span class="sec">#security</span></div>
+    <p class="lede" style="font-size:1rem;margin-top:1.4rem">Built for bitmask-core, my open-source Bitcoin wallet. Any repo can use it.</p>
+  </div>
+  <figure><img src="https://media.giphy.com/media/H6t9FUcjJBRiDICHdb/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 2 -->
+<section>
+  <span class="n">02</span>
+  <div>
+    <div class="kicker">The problem</div>
+    <h2>A stranger's PR<br>just touched my wallet.</h2>
+    <p class="lede">I run an open-source Bitcoin wallet. Contributors I have never met send code that has to be correct and fast, because slow loses users and wrong loses coins. One founder cannot hand-benchmark every pull request.</p>
+  </div>
+  <figure><img src="https://media.giphy.com/media/8K2zqekcOl4Fa/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 3 -->
+<section>
+  <span class="n">03</span>
+  <div>
+    <div class="kicker">The move</div>
+    <h2>Stop guessing.<br>Send thirty.</h2>
+    <p class="lede">Thirty agents, thirty optimisation strategies, thirty sealed bays, one pull request. The benchmark scores them. The test suite decides which ones are even legal.</p>
+    <span class="tag">fastest lap wins, correctness is the gate</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/iic46QD0ceAlnFubFF/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 4 -->
+<section>
+  <span class="n">04</span>
+  <div>
+    <div class="kicker green">Lights out</div>
+    <h2>Thirty bays.<br>One pull request.</h2>
+    <p class="lede">Every bay patches the same function a different way, runs the real test suite, then times itself against its own baseline. Grey bays broke something and are out.</p>
+    <span class="tag">this runs live on stage</span>
+  </div>
+  <div>
+    <div class="lights">
+      <i style="animation-delay:0s,2.4s"></i><i style="animation-delay:.3s,2.4s"></i>
+      <i style="animation-delay:.6s,2.4s"></i><i style="animation-delay:.9s,2.4s"></i>
+      <i style="animation-delay:1.2s,2.4s"></i>
+    </div>
+    <div id="rounds"></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="solo">
+  <span class="n">05</span>
+  <div>
+    <div class="kicker green">Fastest lap</div>
+    <div class="big before">847ms</div>
+    <div class="big after">91ms</div>
+    <div class="mult">9.3x faster</div>
+    <div class="check">✓ all 240 tests still green</div>
+    <div class="clean">re-run from a clean checkout in a sandbox that never met the agent</div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sponsor">
+  <span class="n">06</span>
+  <div>
+    <div class="brand"><svg class="mark" width="275" height="287" viewBox="0 0 275 287" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M14.5584 193.736H114.275V227.925H14.5584V193.736Z" fill="#121212"/> <path d="M148.464 74.076H262.426V108.265H148.464V74.076Z" fill="#121212"/> <path d="M88.6338 84.6127L173.246 0L197.422 24.175L112.809 108.788L88.6338 84.6127Z" fill="#121212"/> <path d="M89.157 170.084L24.175 105.102L0 129.277L64.9819 194.259L89.157 170.084Z" fill="#121212"/> <path d="M174.629 217.911L106.133 286.407L81.9577 262.232L150.454 193.736L174.629 217.911Z" fill="#121212"/> <path d="M174.106 132.44L250.66 208.994L274.835 184.819L198.281 108.265L174.106 132.44Z" fill="#121212"/> <path d="M88.6338 48.434V131.057H54.4451L54.4451 48.434H88.6338Z" fill="#121212"/> <path d="M208.294 168.094V270.66H174.106V168.094H208.294Z" fill="#121212"/> </svg><span>Daytona</span></div>
+    <h2>The garage.</h2>
+    <div class="lap">&lt;90ms<small>TO BUILD A BAY</small></div>
+    <div class="how">
+      <b>How:</b> <span>thirty sandboxes in parallel, each with its own kernel, filesystem, and network. Untrusted patches need that boundary to be safe, and benchmarks need it to be trustworthy. One primitive solves both.</span>
+    </div>
+    <span class="tag">no garage, no race</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/lmq4PIMbNNIguFjhMX/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 7 -->
+<section class="sponsor">
+  <span class="n">07</span>
+  <div>
+    <div class="brand"><img src="https://www.coderabbit.ai/apple-touch-icon.png" alt="CodeRabbit logo"><span>CodeRabbit</span></div>
+    <h2>Scrutineering.</h2>
+    <div class="how">
+      <b>How:</b> <span>the winning patch opens as a real pull request, and CodeRabbit reviews it before it can merge. A benchmark proves the code is fast. It cannot tell you the code is unreadable.</span>
+    </div>
+    <span class="tag">the last gate before the branch</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/uVVGPrnf2UxBt5oA8h/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 8 -->
+<section class="sponsor">
+  <span class="n">08</span>
+  <div>
+    <div class="brand"><img src="https://fireworks.ai/icon0.svg" alt="Fireworks AI logo"><span>Fireworks AI</span></div>
+    <h2>The power unit.</h2>
+    <div class="how">
+      <b>How:</b> <span>thirty patches means thirty inference calls per pull request. High-throughput open models make that a rounding error instead of a budget meeting. Throughput is what makes the swarm possible at all.</span>
+    </div>
+    <span class="tag">thirty engines, one stop</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/1QjxtwZ9LoPD2Jlcuq/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 9 -->
+<section class="sponsor">
+  <span class="n">09</span>
+  <div>
+    <div class="brand"><img src="https://braintrust.dev/favicon.svg" alt="Braintrust logo"><span>Braintrust</span></div>
+    <h2>Telemetry.</h2>
+    <div class="how">
+      <b>How:</b> <span>every bay is logged and scored: which strategy, what ratio, legal or disqualified, at what token cost. We learn which optimisations win on which shape of code, so the next race starts smarter.</span>
+    </div>
+    <span class="tag">thirty data points per pull request</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/eiLBMFy3C266fcAeUT/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 10 -->
+<section class="sponsor">
+  <span class="n">10</span>
+  <div>
+    <div class="brand"><img src="https://www.copilotkit.ai/favicon.ico" alt="CopilotKit logo"><span>CopilotKit</span><span class="plus">+</span><img src="https://elevenlabs.io/icon.svg?c23f5371fdd26632" alt="ElevenLabs logo"><span>ElevenLabs</span></div>
+    <h2>Talk to the pit wall.</h2>
+    <div class="exchange">
+      <div class="you"><b>YOU, OVER RADIO</b>&ldquo;Box, box. Kill everything slower than three hundred milliseconds.&rdquo;</div>
+      <div class="crew"><b>CREW, 1.2s LATER</b>&ldquo;Copy. Twenty two bays retired. Eight still running. Fastest is bay twelve.&rdquo;</div>
+    </div>
+    <div class="pair">
+      <div>
+        <h3>CopilotKit</h3>
+        <p><b>Turns the sentence into a real call on the swarm.</b> A <code>useCopilotAction</code> handler kills, spawns, and re-seeds bays. The grid culls while you are still speaking.</p>
+      </div>
+      <div>
+        <h3>ElevenLabs</h3>
+        <p><b>Your voice in, the crew's voice back.</b> Speech to text drives the command, and the confirmation comes back over team radio. Two way, not narration.</p>
+      </div>
+    </div>
+    <span class="tag">both of them change the race, neither just watches it</span>
+  </div>
+  <figure><img src="https://media.giphy.com/media/2J41F8POcAVv69iscS/giphy.gif" alt=""></figure>
+</section>
+
+<!-- 11 -->
+<section class="solo">
+  <span class="n">11</span>
+  <div>
+    <div class="kicker green">Safe by construction</div>
+    <h2>Thirty untrusted agents.<br>Zero blast radius.</h2>
+    <div class="ladder">
+      <div class="rung now">
+        <h3>ISOLATED</h3>
+        <p>Every patch runs in a Daytona sandbox with its own kernel and network. Nothing touches your machine.</p>
+      </div>
+      <div class="rung">
+        <h3>HUMAN GATED</h3>
+        <p>The output is a proposed pull request. Nothing reaches a branch without you approving it.</p>
+      </div>
+      <div class="rung sec">
+        <h3>NO SELF-GRADING</h3>
+        <p>The guard rejects any patch that edits the tests or the benchmark. The agent cannot move its own goalposts.</p>
+      </div>
+    </div>
+    <p class="lede">And the winning number is re-measured in a clean room that never ran the agent.</p>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="solo">
+  <span class="n">12</span>
+  <div>
+    <div class="kicker green">Chequered flag</div>
+    <h2>Two lanes.<br>One crew.</h2>
+    <div class="ladder">
+      <div class="rung now">
+        <h3>#PERFORMANCE  ·  TODAY</h3>
+        <p><b>Make it faster.</b> The benchmark scores every bay, the test suite decides which ones are legal. Nothing merges slower than it arrived.</p>
+      </div>
+      <div class="rung sec">
+        <h3>#SECURITY  ·  NEXT</h3>
+        <p><b>Make it safe.</b> Same race, different oracle. The exploit stops reproducing, and the tests stay green.</p>
+      </div>
+      <div class="rung">
+        <h3>SCOPE</h3>
+        <p><b>One PR, then the whole repo.</b> Dependabot tells you about the vulnerability and opens a PR that breaks your build. We are the crew that fixes it.</p>
+      </div>
+    </div>
+    <p class="lede">Same crew. Same garage. Different oracle.</p>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="solo">
+  <span class="n">13</span>
+  <div>
+    <div class="kicker green">The money</div>
+    <h2>Every pull request<br>is a billable event.</h2>
+    <div class="tiers">
+      <div class="tier">
+        <h3>FREE</h3>
+        <div class="price">$0</div>
+        <p>One repo, five races a month. The habit starts.</p>
+      </div>
+      <div class="tier hero">
+        <h3>TEAM</h3>
+        <div class="price">$25<em>/dev/mo</em></div>
+        <p>Both lanes on every pull request. Same shelf as CodeRabbit and Snyk, because it is the same workflow.</p>
+      </div>
+      <div class="tier">
+        <h3>ENTERPRISE</h3>
+        <div class="price">Sweeps</div>
+        <p>Whole-codebase performance and security races, priced against the compute and the incidents they save.</p>
+      </div>
+    </div>
+    <div class="proj">
+      <span><b>20,000</b> devs = <b class="g">$6M</b> ARR</span>
+      <span><b>100,000</b> devs = <b class="g">$30M</b> ARR</span>
+    </div>
+    <p class="lede">Scanners tell you what is broken. CodeRabbit tells you what to fix. Pit Crew fixes it, and hands you the number that proves it. A number is the easiest thing in software to put in a budget.</p>
+    <p class="lede" style="font-size:1rem;margin-top:1.2rem">First user: me. Built for bitmask-core before it was built for anyone else.</p>
+  </div>
+  <figure><img src="https://media.giphy.com/media/z7bV9ytXm0mYaot2mi/giphy.gif" alt=""></figure>
+</section>
+
+<div class="hint">↓ / → to advance</div>
+
+<script>
+  // MVP ships ONE round. If the tournament works on the day, set ROUNDS = 3.
+  const ROUNDS = 1;
+  const LIGHTS_OUT = 2400;
+
+  const ALL = [
+    {label: 'ROUND 1  ·  30 BAYS  ·  LAP TIME (ms)', n: 30, cols: 10, lo: 91,  hi: 840, dq: 5},
+    {label: 'ROUND 2  ·  TOP 10 MUTATED',            n: 10, cols: 10, lo: 140, hi: 310, dq: 1},
+    {label: 'ROUND 3  ·  TOP 3 REFINED',             n: 3,  cols: 3,  lo: 91,  hi: 130, dq: 0}
+  ].slice(0, ROUNDS);
+
+  const host = document.getElementById('rounds');
+  let t = LIGHTS_OUT;
+
+  ALL.forEach((r, ri) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'round';
+    wrap.style.animationDelay = t + 'ms';
+
+    const lab = document.createElement('div');
+    lab.className = 'rlabel';
+    lab.textContent = r.label;
+    wrap.appendChild(lab);
+
+    const grid = document.createElement('div');
+    grid.className = 'bays';
+    grid.style.gridTemplateColumns = `repeat(${r.cols},1fr)`;
+
+    const times = Array.from({length: r.n}, (_, k) =>
+      Math.round(r.lo + (r.hi - r.lo) * (k / Math.max(r.n - 1, 1)))
+    );
+    const fastest = Math.min(...times);
+    const isFinal = ri === ALL.length - 1;
+
+    // shuffle so the winner is not visually predictable
+    times.sort(() => Math.random() - .5);
+
+    times.forEach((ms, k) => {
+      const b = document.createElement('div');
+      const dq = k < r.dq;                       // broke the tests, disqualified
+      const win = ms === fastest && !dq;
+      b.className = 'bay ' + (dq ? 'bad' : win && isFinal ? 'p1' : ms < (r.lo + r.hi) / 2 ? 'ok' : 'mid');
+      b.textContent = dq ? 'DQ' : ms;
+      b.style.animationDelay = (t + 200 + Math.random() * 900) + 'ms';
+      grid.appendChild(b);
+    });
+
+    wrap.appendChild(grid);
+    host.appendChild(wrap);
+    t += 1500;
+  });
+
+  const slides = [...document.querySelectorAll('section')];
+  let i = 0;
+  addEventListener('keydown', e => {
+    if (['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)) {
+      e.preventDefault(); i = Math.min(i + 1, slides.length - 1); slides[i].scrollIntoView();
+    }
+    if (['ArrowUp','ArrowLeft','PageUp'].includes(e.key)) {
+      e.preventDefault(); i = Math.max(i - 1, 0); slides[i].scrollIntoView();
+    }
+  });
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) i = slides.indexOf(en.target); });
+  }, {threshold:.5});
+  slides.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
