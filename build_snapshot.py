@@ -1,8 +1,22 @@
 """Bake a Daytona snapshot so bays start instantly.
 
-SETUP.md section 2: without this, every one of the 30 bays spends 30-60s on
-`pip install` before it can do any work, and a 20-second race becomes a
-four-minute one. On stage that difference is the whole demo.
+*** MEASURED 2026-07-23: YOU DO NOT NEED THIS. ***
+
+Two findings from running it against the live API:
+
+1. Custom snapshot creation is DENIED on this account's plan
+   (DaytonaAuthorizationError: Access denied). Every snapshot the account can
+   see is one of Daytona's own general=True prebuilts.
+
+2. It does not matter. SETUP.md's 30-60s warning assumes a heavy dependency
+   tree; widget-api needs only pytest. Measured on a live sandbox:
+
+       spawn 0.4s + pip install pytest 1.6s + verify 0.2s = 2.3s per bay
+
+   A snapshot would save under two seconds per bay. Not worth an hour.
+
+Keep this file in case the plan changes at the event, but do not spend prep
+time here. Install deps at bay startup instead.
 
     ./.venv/bin/python build_snapshot.py
 

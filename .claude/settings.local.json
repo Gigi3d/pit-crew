@@ -62,7 +62,16 @@
       "Read(//tmp/**)",
       "Bash(ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -T git@github.com)",
       "Bash(git ls-remote *)",
-      "Bash(echo \"ls-remote exit code: $? \\(0 = repo exists but is EMPTY; 128 = missing/no access\\)\")"
+      "Bash(echo \"ls-remote exit code: $? \\(0 = repo exists but is EMPTY; 128 = missing/no access\\)\")",
+      "Bash(~/Documents/0001hack/.venv/bin/python -c ' *)",
+      "Bash(~/Documents/0001hack/.venv/bin/python -m pytest -q)",
+      "Bash(cd ~/Documents/0001hack)",
+      "Bash(echo)",
+      "Bash(echo \"=== fireworks now? ===\")",
+      "Bash(echo \"=== elevenlabs now? ===\")",
+      "Bash(echo \"widget-api ls-remote exit: $? \\(0=exists/empty, 128=missing\\)\")",
+      "Bash(./.venv/bin/python concurrency_test.py 30)",
+      "Bash(./.venv/bin/python concurrency_test.py 12)"
     ]
   }
 }
