@@ -22,6 +22,9 @@ export type Bay = {
 export function useRaceActions(
   bays: Record<number, Bay>,
   killBays: (predicate: (b: Bay) => boolean) => number,
+  // Called by "approve the winner". The page owns it because it knows which PR
+  // is on the line; it posts to /api/approve and returns the PR url.
+  onApprove?: () => Promise<{ pr?: string } | void>,
   speak?: (text: string) => void,
 ) {
   // let the copilot see the live race so it can answer questions about it
@@ -54,16 +57,20 @@ export function useRaceActions(
     },
   });
 
-  // "approve the winner" -> opens PR #2 (see widget-api/DEMO.md)
+  // "approve the winner" -> posts the winning PR to Discord for review.
   useCopilotAction({
     name: "openWinnerPR",
-    description: "Approve the current winning patch and open pull request #2.",
+    description: "Approve the current winning patch and post its PR for review.",
     parameters: [],
     handler: async () => {
-      const res = await fetch("/api/approve", { method: "POST" });
-      const msg = res.ok
-        ? "Winner approved. Pull request opening now."
-        : "Could not open the pull request.";
+      const res = onApprove
+        ? await onApprove()
+        : await fetch("/api/approve", { method: "POST" }).then((r) =>
+            r.ok ? {} : undefined,
+          );
+      const msg = res
+        ? "Winner approved. PR posted to Discord for review."
+        : "Could not post the pull request.";
       speak?.(msg);
       return msg;
     },
