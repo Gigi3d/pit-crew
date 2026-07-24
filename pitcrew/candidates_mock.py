@@ -140,7 +140,7 @@ LABELS = {
     "MALICIOUS": "edit the tests",
 }
 
-# 30 bays, hand-mixed for a realistic race: strong winners, a long tail, two
+# Hand-mixed candidate pool (a race takes the first n_bays) for a realistic race: strong winners, a long tail, two
 # test-failing patches, and one that tries to tamper with the gate.
 BAY_PLAN = [
     "FULL", "SET_JOIN", "SET", "JOIN", "SORTONCE", "SET_SORT", "FULL", "SET_JOIN",

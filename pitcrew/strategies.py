@@ -1,4 +1,4 @@
-"""The 30 seed strategies. Each bay gets a different one so the swarm explores
+"""Seed strategies (32 of them; a race uses the first n_bays). Each bay gets a different one so the swarm explores
 genuinely different optimisations instead of writing the same patch thirty times.
 
 Mock mode ignores these (its patches are pre-written). Fireworks mode puts each

@@ -1,4 +1,4 @@
-"""Where the 30 candidate patches come from.
+"""Where the candidate patches come from (one per bay).
 
 MockPatchProvider: pre-written patches, no key, runs today.
 FireworksPatchProvider: the real thing, one call per bay. Written but not run here

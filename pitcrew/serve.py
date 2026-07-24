@@ -59,7 +59,7 @@ class Handler(BaseHTTPRequestHandler):
         def race():
             run_race(
                 target_repo=TARGET, fixture=fixture,
-                provider=MockPatchProvider(), n_bays=30,
+                provider=MockPatchProvider(), n_bays=10,
                 telemetry=NullTelemetry(), emit=q.put, max_workers=8,
             )
             q.put({"type": "done"})

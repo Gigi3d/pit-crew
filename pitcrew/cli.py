@@ -1,7 +1,7 @@
 """Run a full race from the terminal, no keys required.
 
   python -m pitcrew.cli                       # mock race against ../widget-api
-  python -m pitcrew.cli --target /path/to/widget-api --bays 30
+  python -m pitcrew.cli --target /path/to/widget-api --bays 10
 
 Writes race_events.jsonl and race_result.json next to where you run it, so the
 same events can later feed the live UI.
@@ -29,7 +29,7 @@ C = {"g": "\033[32m", "a": "\033[33m", "r": "\033[31m", "w": "\033[97m",
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--target", default=DEFAULT_TARGET)
-    ap.add_argument("--bays", type=int, default=30)
+    ap.add_argument("--bays", type=int, default=10)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--full-fixture", action="store_true",
                     help="use the target's real fixture.json instead of a mini one")

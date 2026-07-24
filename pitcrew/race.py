@@ -30,7 +30,7 @@ def run_race(
     target_repo: str,
     fixture: str,
     provider,
-    n_bays: int = 30,
+    n_bays: int = 10,  # measured Daytona ceiling on this account (CPU-quota capped)
     telemetry=None,
     sandbox_factory=LocalSandbox,
     winner_files_for: Optional[Callable[[int], dict]] = None,

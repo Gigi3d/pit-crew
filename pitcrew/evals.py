@@ -101,7 +101,7 @@ def main():
 
     print("running a race to score strategies (mock, no keys needed)...")
     result = run_race(target_repo=target, fixture=fixture,
-                      provider=MockPatchProvider(), n_bays=30, max_workers=8)
+                      provider=MockPatchProvider(), n_bays=10, max_workers=8)
     scores = score_strategies(result.results)
     print_leaderboard(scores)
 
