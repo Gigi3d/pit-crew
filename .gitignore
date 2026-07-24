@@ -24,3 +24,6 @@ assets/race.gif
 
 # repo venv
 .venv/
+
+# sim PR rotation state (runtime)
+.pitcrew_sim_state.json

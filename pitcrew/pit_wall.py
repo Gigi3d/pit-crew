@@ -50,10 +50,11 @@ _load_env()
 BRAND = 0xF2D25A  # pit-crew gold
 
 
-def _embed(pr_url, baseline_ms, candidate_ms, strategy, tests_ok):
+def _embed(pr_url, baseline_ms, candidate_ms, strategy, tests_ok, pr_title=None):
     speedup = (baseline_ms / candidate_ms) if candidate_ms else 0
+    headline = pr_title or "Winner is in. PR is open."
     return {
-        "title": "Winner is in. PR is open.",
+        "title": headline,
         "url": pr_url,
         "description": (
             f"Ten agents raced. The fastest legal patch won and its pull "
@@ -85,13 +86,14 @@ def announce(
     result=None,
     gif_path: Optional[str] = None,
     webhook_url: Optional[str] = None,
+    pr_title: Optional[str] = None,
 ) -> bool:
     """Post the winning PR to Discord. Returns True if delivered."""
     webhook_url = webhook_url or os.getenv("DISCORD_WEBHOOK_URL")
 
     # Make the GIF from the real result when we have one, else a synthetic race.
     gif_path = gif_path or render_race_gif(result, out_path="assets/race.gif")
-    embed = _embed(pr_url, baseline_ms, candidate_ms, strategy, tests_ok)
+    embed = _embed(pr_url, baseline_ms, candidate_ms, strategy, tests_ok, pr_title)
     payload = {"embeds": [embed], "username": "Pit Crew"}
 
     if not webhook_url:
@@ -117,13 +119,36 @@ def announce(
 
 
 if __name__ == "__main__":
-    # Dry-run with the numbers from the real widget-api fix. The PR opens on
-    # Gigi3d/widget-api - the repo the incoming PR came from.
-    announce(
-        pr_url=os.getenv("PITCREW_PR_URL",
-                         "https://github.com/Gigi3d/widget-api/pull/1"),
-        baseline_ms=619,
-        candidate_ms=9,
-        strategy="set + join + sort once",
-        tests_ok=True,
-    )
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Post a winning PR to Discord.")
+    ap.add_argument("--simulate", action="store_true",
+                    help="post a fresh, unique bitmask-style PR from the sim feed")
+    args = ap.parse_args()
+
+    if args.simulate:
+        # A different realistic PR every run, so a repeated demo never looks
+        # like a repeat. Links resolve to your own PITCREW_SIM_REPO.
+        from .sim_prs import next_pr
+
+        pr = next_pr()
+        print(f"simulating PR #{pr['number']}: {pr['title']}")
+        announce(
+            pr_url=pr["pr_url"],
+            baseline_ms=pr["baseline_ms"],
+            candidate_ms=pr["candidate_ms"],
+            strategy=pr["strategy"],
+            pr_title=pr["title"],
+            tests_ok=True,
+        )
+    else:
+        # The real widget-api fix.
+        announce(
+            pr_url=os.getenv("PITCREW_PR_URL",
+                             "https://github.com/Gigi3d/widget-api/pull/1"),
+            baseline_ms=619,
+            candidate_ms=9,
+            strategy="set + join + sort once",
+            pr_title="Make rollup_events single-pass",
+            tests_ok=True,
+        )
